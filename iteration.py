@@ -49,7 +49,7 @@ def h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t):
     sig_i_k_act = sig_i_k[active]
     h_i_k[:] = J_i_j_k_l.dot(sig_i_k_act)
     h_i_k += w*sig_i_k_act
-    h_i_k -= w/S*spreadActiveStates.dot(sumActiveStates.dot(sig_i_k_act))
+    # h_i_k -= w/S*spreadActiveStates.dot(sumActiveStates.dot(sig_i_k_act))
     h_i_k += cue(t, delta__ksi_i_mu__k)
 
 
