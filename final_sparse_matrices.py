@@ -25,12 +25,11 @@ if os.environ.get('DISPLAY', '') == '':
     print('no display found. Using non-interactive Agg backend')
     mpl.use('Agg')
 
-rd.seed(2019)
-
-
 dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
-    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind \
-    = get_parameters()
+    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
+    random_seed = get_parameters()
+rd.seed(random_seed)
+
 
 # if 'ksi_i_mu'not in locals():
 ksi_i_mu, delta__ksi_i_mu__k = patterns.get_correlated()

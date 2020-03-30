@@ -7,8 +7,10 @@ from scipy.optimize import root
 
 
 dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
-    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, ind_cue \
-    = get_parameters()
+    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, ind_cue, \
+    random_seed = get_parameters()
+
+rd.seed(random_seed+2)
 
 
 def hebbian_tensor(delta__ksi_i_mu__k):

@@ -5,8 +5,8 @@ import time
 from parameters import get_parameters
 
 dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
-    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind \
-    = get_parameters()
+    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
+    random_seed = get_parameters()
 
 # As one used only one dimension for units and states
 active = np.ones(N*(S+1), dtype='bool')
@@ -77,7 +77,8 @@ def sig_fun(sig_i_k, r_i_k):
 
 
 def cue(t, delta__ksi_i_mu__k):
-    return g * 1/np.sqrt(2*np.pi*tau**2) * np.exp(-(t-t_0)**2/2/tau**2) \
+    return g * (t > t_0) \
+        * 1/np.sqrt(2*np.pi*tau**2) * np.exp(-(t-t_0)**2/2/tau**2) \
         * delta__ksi_i_mu__k[:, cue_ind]
 
 

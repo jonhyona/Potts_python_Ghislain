@@ -10,8 +10,10 @@ import numpy as np
 from parameters import get_parameters
 
 dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
-    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind \
-    = get_parameters()
+    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
+    random_seed = get_parameters()
+
+rd.seed(random_seed + 1)
 
 
 def delta(i, j):
@@ -56,19 +58,24 @@ def get_correlated():
     ksi_mu_i = S*np.ones((p, N), dtype='int')  # Initialized in inactive state
 
     # Attribute p_fact children to each parent
+    print('Attribute parents')
+    deck = list(range(0, p))
     for n in range(num_fact):
-        m = 0
-        while m < p_fact:
-            child_candidate = rd.randint(0, p)
-            already_picked = False
-            for i in range(m):
-                if ind_children[n, i] == child_candidate:
-                    already_picked = True
-            if not already_picked:
-                ind_children[n, m] = child_candidate
-                m += 1
+        rd.shuffle(deck)
+        ind_children[n, :] = deck[:p_fact]
+        # m = 0
+        # while m < p_fact:
+        #     child_candidate = rd.randint(0, p)
+        #     already_picked = False
+        #     for i in range(m):
+        #         if ind_children[n, i] == child_candidate:
+        #             already_picked = True
+        #     if not already_picked:
+        #         ind_children[n, m] = child_candidate
+        #         m += 1
 
     # Compute fields
+    print('Compute fields')
     for mu in range(p):
         child_fields = np.zeros((N, S+1))
 
@@ -99,6 +106,7 @@ def get_correlated():
     # One needs ksi_i_mu
     ksi_i_mu = ksi_mu_i.transpose()
 
+    print('Deltas')
     # Compute patterns in a different form
     delta__ksi_i_mu__k = np.zeros((N*S, p))
     for i in range(N):

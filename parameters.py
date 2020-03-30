@@ -43,11 +43,13 @@ beta = 11
 # Cue
 g = 5.
 t_0 = 50
-tau = 10
-cue_ind = 0
+tau = 1
+cue_ind = 1
+
+random_seed = 2021
 
 
 def get_parameters():
     return dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, \
         U, T, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, \
-        cue_ind
+        cue_ind, random_seed
