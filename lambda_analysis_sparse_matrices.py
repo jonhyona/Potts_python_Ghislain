@@ -134,7 +134,7 @@ plt.xlabel(r'$\lambda$')
 plt.ylabel(r'$\rho(\lambda)$')
 plt.savefig('histNit' + str(tSim))
 
-
+lamb = np.array(lamb)
 C1C2C0 = correlations.cross_correlations(ksi_i_mu)
 
 correlations.correlations_1D_hist(ksi_i_mu, C1C2C0)
@@ -152,10 +152,25 @@ YY = correlations.active_same_state(ksi_i_mu[:, retrieved_saved],
 ZZ = correlations.active_inactive(ksi_i_mu[:, retrieved_saved],
                                   ksi_i_mu[:, outsider_saved])
 
+s = 1
+low_cor = lamb < 0.2
+l_low_cor = r'$\lambda < 0.2$'
+mid_low_cor = np.logical_and(0.2 <= lamb, lamb < 0.6)
+l_mid_low_cor = r'$0.2 <= \lambda < 0.6$'
+mid_high_cor = np.logical_and(0.6 <= lamb, lamb < 0.8)
+l_mid_high_cor = r'$0.6 <= \lambda < 0.8$'
+high_cor = 0.8 <= lamb
+l_high_cor = r'$0.8 <= \lambda $'
+
 C1C2C0 = correlations.cross_correlations(ksi_i_mu)
 plt.figure('Correlations between transition patterns')
 ax1 = plt.subplot(121)
-plt.scatter(XX, YY, s=0.05)
+ax1.scatter(XX[low_cor], YY[low_cor], s=s, c='orange', label=l_low_cor)
+ax1.scatter(XX[mid_low_cor], YY[mid_low_cor], s=s, c='cyan', label=l_mid_low_cor)
+ax1.scatter(XX[mid_high_cor], YY[mid_high_cor], s=s, c='m', label=l_mid_high_cor)
+ax1.scatter(XX[high_cor], YY[high_cor], s=s, c='g', label=l_high_cor)
+ax1.legend()
+
 ax1.set_ylabel('C1')
 ax1.set_xlabel('C2')
 ax1.set_xlim(x0, x1)
@@ -171,14 +186,18 @@ plt.title('Correlations between transition patterns')
 
 plt.figure('Lambda, C')
 plt.subplot(131)
-plt.scatter(XX, lamb)
+plt.hist2d(XX, lamb)
 plt.xlabel('C1')
+plt.colorbar()
 plt.subplot(132)
-plt.scatter(YY, lamb)
+plt.hist2d(YY, lamb)
 plt.xlabel('C2')
+plt.ylabel(r'$\lambda')
+plt.colorbar()
 plt.subplot(133)
-plt.plot(ZZ, lamb)
+plt.hist2d(ZZ, lamb)
 plt.xlabel('Active Inactive')
+plt.colorbar()
 
 
 
