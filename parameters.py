@@ -9,7 +9,7 @@ from and their behavior
 
 # Integration
 dt = 1
-tSim = 100000
+tSim = 250
 
 # Network
 # Potts units

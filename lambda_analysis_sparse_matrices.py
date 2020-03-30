@@ -104,7 +104,7 @@ for iT in tqdm(range(nT)):
 
         if max_m_mu < .1:
             cpt_idle += 1
-            if cpt_idle > nT:
+            if cpt_idle > nT/10 and nT >= 1000:
                 print("latchingDied")
                 break
         ind_max_prev = ind_max
@@ -149,6 +149,9 @@ XX = correlations.active_diff_state(ksi_i_mu[:, retrieved_saved],
                                     ksi_i_mu[:, outsider_saved])
 YY = correlations.active_same_state(ksi_i_mu[:, retrieved_saved],
                                     ksi_i_mu[:, outsider_saved])
+ZZ = correlations.active_inactive(ksi_i_mu[:, retrieved_saved],
+                                  ksi_i_mu[:, outsider_saved])
+
 C1C2C0 = correlations.cross_correlations(ksi_i_mu)
 plt.figure('Correlations between transition patterns')
 ax1 = plt.subplot(121)
@@ -165,4 +168,19 @@ ax2.set_xlim(x0, x1)
 ax2.set_ylim(y0, y1)
 plt.colorbar()
 plt.title('Correlations between transition patterns')
+
+plt.figure('Lambda, C')
+plt.subplot(131)
+plt.scatter(XX, lamb)
+plt.xlabel('C1')
+plt.subplot(132)
+plt.scatter(YY, lamb)
+plt.xlabel('C2')
+plt.subplot(133)
+plt.plot(ZZ, lamb)
+plt.xlabel('Active Inactive')
+
+
+
+
 plt.show()

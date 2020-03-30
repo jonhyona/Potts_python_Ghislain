@@ -93,6 +93,8 @@ inputs = \
 
 inputs = inputs*mat_par_child[None, :, :]
 
+children_fields = np.tensordot(inputs, parents_states, axes=([2], [1]))
+
 
 # One needs ksi_i_mu
 ksi_i_mu = ksi_mu_i.transpose()
