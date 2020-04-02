@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 # Local modules
 from parameters import get_parameters
+from parameters import get_f_russo
 import patterns
 import correlations
 import initialisation
@@ -29,6 +30,8 @@ dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
     tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
     random_seed = get_parameters()
 
+f_russo = get_f_russo()
+
 rd.seed(random_seed)
 
 tS = np.arange(0, tSim, dt)
@@ -36,9 +39,6 @@ nT = tS.shape[0]
 
 analyseTime = False
 analyseDivergence = False
-
-df = 0.1
-f_russo_vect = np.arange(0, 1, df)
 
 ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay(f_russo)
 
