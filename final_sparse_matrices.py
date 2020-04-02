@@ -32,7 +32,7 @@ rd.seed(random_seed)
 
 
 # if 'ksi_i_mu'not in locals():
-ksi_i_mu, delta__ksi_i_mu__k = patterns.get_correlated()
+ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay()
 
 J_i_j_k_l = initialisation.hebbian_tensor(delta__ksi_i_mu__k)
 
@@ -109,5 +109,9 @@ plt.figure(2)
 for mu in range(p):
     plt.plot(tS, m_mu_plot[:, mu])
 plt.title('overlap')
+
+active = np.ones(N*(S+1), dtype='bool')
+active[S::S+1] = False
+print(sum(sig_i_k[active]))
 
 plt.show()

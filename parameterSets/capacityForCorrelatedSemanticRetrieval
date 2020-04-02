@@ -1,0 +1,40 @@
+# Integration
+dt = 1
+tSim = 250
+
+# Network
+# Potts units
+N = 20000
+S = 5
+p = 10000
+
+# Pattern generation
+num_fact = 150
+p_fact = 1
+dzeta = 0
+a_pf = 1
+eps = 0.00001
+
+# Building network
+cm = 150
+a = 0.3
+
+# Network dynamics
+U = 0.1
+T = 0.09
+w = 0.8
+tau_1 = 3.33
+tau_2 = 100
+tau_3_A = 1e6
+tau_3_B = 1
+g_A = 1
+
+beta = 11
+
+# Cue
+g = 5.
+t_0 = 50
+tau = 1
+cue_ind = 1
+
+random_seed = 2021

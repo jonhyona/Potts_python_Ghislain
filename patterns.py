@@ -8,6 +8,7 @@
 import numpy.random as rd
 import numpy as np
 from parameters import get_parameters
+from parameters import get_f_russo
 from time import time
 
 dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
@@ -133,5 +134,43 @@ def get_correlated():
 
     t3 = time()
     print('Deltas : ' + str(t3-t2))
+
+    return ksi_i_mu, delta__ksi_i_mu__k
+
+
+def get_vijay(f_russo):
+    factors = rd.binomial(1, f_russo, (N,num_fact))
+
+    sMax = S*np.ones(N,dtype='int')
+    hMax = np.zeros(N)
+    ksi_i_mu = S*np.ones((N,p),dtype='int')
+    ind_unit = np.linspace(0,N-1,N,dtype=int)
+
+    gamma_mu_n = rd.rand(p, num_fact)*rd.binomial(1,a_pf,(p,num_fact))
+    expo_fact = np.exp(-dzeta*np.linspace(0,num_fact-1, num_fact))
+
+    gamma_mu_n = gamma_mu_n*expo_fact[None,:]
+
+    sigma_n = rd.randint(0,S,(p,num_fact))
+
+    for mu in range(p):
+        fields = np.zeros((N,S))
+        
+        for n in range(num_fact):
+            fields[:,sigma_n[mu,n]] += gamma_mu_n[mu,n]*factors[:,n]
+
+        fields[ind_unit, rd.randint(0, S, N)[ind_unit]] += eps*rd.rand(N)
+
+        sMax = np.argmax(fields, axis=1)
+        hMax = np.max(fields, axis=1)
+        indSorted = np.argsort(hMax)[int(N*(1-a)):]
+
+        ksi_i_mu[indSorted, mu] = sMax[indSorted]
+
+    # Compute patterns in a different form
+    delta__ksi_i_mu__k = np.kron(ksi_i_mu, np.ones((S, 1)))
+    k_mat = np.kron(np.ones((N, p)),
+                    np.reshape(np.linspace(0, S-1, S), (S, 1)))
+    delta__ksi_i_mu__k = delta__ksi_i_mu__k == k_mat
 
     return ksi_i_mu, delta__ksi_i_mu__k

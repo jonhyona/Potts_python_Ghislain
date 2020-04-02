@@ -6,58 +6,56 @@ Different interesting parameters set used must be stored in
 from and their behavior
 """
 
+""" This set was created on March 31st. The aim is to find
+set of connectivity parameters p_par, S, p, num_fact
+that has high C1 and C2
+"""
+
 # Integration
-dt = 0.5
-tSim = 25000
-# objective : tSim = 50000
+dt = 1
+tSim = 1
 
 # Network
 # Potts units
-N = 200
-S = 7
-p = 50
-
+N = 1000
+S = 5
+p = 200
+# f = 1/50
 # Pattern generation
-num_fact = 200
-p_fact = 50       #0.25*200
-dzeta = 0.02
-a_pf = 0.25
-eps = 0.001
+num_fact = 5
+# p_fact = int(f*p)
+p_fact = 40
+dzeta = 0
+a_pf = 1
+eps = 0.75
 
 # Building network
-cm = 25
-a = 0.25
-f_russo = 0.8
+cm = 150
+a = 0.3
 
 # Network dynamics
-U = 0.4
+U = 0.1
 T = 0.09
-w = 1.8
-b1 = 0.1
-b2 = 0.005
-b3 = 1
-tau_1 = 1/b1
-tau_2 = 1/b2
-tau_3_A = 1/b3
+w = 0.8
+tau_1 = 3.33
+tau_2 = 100
+tau_3_A = 1e6
 tau_3_B = 1
 g_A = 1
 
 beta = 11
 
 # Cue
-g = 50
+g = 5.
 t_0 = 50
 tau = 1
 cue_ind = 1
 
 random_seed = 2021
 
-# Carefull : J_ii_kk : not w : has to delete one term!!!
 
 def get_parameters():
     return dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, \
         U, T, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, \
         cue_ind, random_seed
 
-def get_f_russo():
-    return f_russo

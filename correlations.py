@@ -101,17 +101,18 @@ def overlap(ksi1, ksi2):
 def correlations_2D_hist(ksi_i_mu, C1C2C0=None):
     if C1C2C0 is None:
         C1C2C0 = cross_correlations(ksi_i_mu)
-    x0 = np.min(C1C2C0[:, 1])
-    x1 = np.max(C1C2C0[:, 1])
-    y0 = np.min(C1C2C0[:, 0])
-    y1 = np.max(C1C2C0[:, 0])
+    # x0 = np.min(C1C2C0[:, 1])
+    # x1 = np.max(C1C2C0[:, 1])
+    # y0 = np.min(C1C2C0[:, 0])
+    # y1 = np.max(C1C2C0[:, 0])
+    x0, y0, x1, y1 = (0, 0, 1, 1)
 
     plt.figure('correlation_2D_hist')
     plt.title('Correlations between all patterns')
 
     plt.subplot(121)
     plt.scatter(C1C2C0[:, 1], C1C2C0[:, 0], s=0.05)
-    plt.xlim(-0.1, 0.6)
+
     plt.xlabel('C2')
     plt.ylabel('C1')
     plt.xlim(x0, x1)
