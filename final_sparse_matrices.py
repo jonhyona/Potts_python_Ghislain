@@ -56,6 +56,20 @@ sig_i_k_plot = np.zeros((nSnap, N*(S+1)))
 analyseTime = False
 analyseDivergence = False
 
+# Plot parameters
+lamb = []
+tTrans = []
+retrieved_saved = []
+max_m_mu_saved = []
+max2_m_mu_saved = []
+outsider_saved = []
+indTrans = 0
+cpt_idle = 0
+d12 = 0
+l = tSim
+eta = 0
+ind_max_prev = -1
+
 for iT in tqdm(range(nT)):
     iteration.iterate(J_i_j_k_l, delta__ksi_i_mu__k, tS[iT], analyseTime,
                       analyseDivergence, sig_i_k, r_i_k, r_i_S_A,
@@ -67,6 +81,34 @@ for iT in tqdm(range(nT)):
     theta_i_k_plot[iT, :] = theta_i_k
     sig_i_k_plot[iT, :] = sig_i_k
 
+    if tS[iT] > t_0 + tau:
+        ind_max = np.argmax(m_mu)
+        max_m_mu = m_mu[ind_max]
+        m_mu[ind_max] = - np.inf
+        outsider = np.argmax(m_mu)
+        max2_m_mu = m_mu[outsider]
+
+        d12 += dt*(max_m_mu- max2_m_mu)
+
+        if ind_max != ind_max_prev:
+            tTrans.append(tS[iT])
+            lamb.append(max_m_mu)
+            retrieved_saved.append(ind_max)
+            outsider_saved.append(outsider)
+            max_m_mu_saved.append(max_m_mu)
+            max2_m_mu_saved.append(max2_m_mu)
+
+            indTrans += 1
+            cpt_idle = 0
+            eta  = 1
+
+        if max_m_mu < .01:
+            cpt_idle += 1
+            if cpt_idle > nT/10 and nT >= 1000:
+                print("latchingDied")
+                l = tS[iT]
+                break
+        ind_max_prev = ind_max
 
 # Plot
 plt.close('all')
@@ -110,6 +152,7 @@ ax5.set_title("sig_i_k")
 ax6.plot("sig_i_S")
 plt.figure(2)
 for mu in range(p):
+# for mu in retrieved_saved[:]:
     plt.plot(tS, m_mu_plot[:, mu])
 plt.title('overlap')
 

@@ -103,6 +103,8 @@ for iT in tqdm(range(nT)):
         ind_max_prev = ind_max
 Q = d12*l*eta
 
+
+
 lamb = np.array(lamb)
 gap = np.logical_and(lamb > 0.25, lamb < 0.55)
 C1C2C0 = correlations.cross_correlations(ksi_i_mu)

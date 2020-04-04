@@ -13,7 +13,7 @@ import numpy.random as rd
 from tqdm import tqdm
 
 # Local modules
-from parameters import get_parameters
+from parameters import get_parameters, get_f_russo
 import patterns
 import correlations
 import initialisation
@@ -28,10 +28,11 @@ if os.environ.get('DISPLAY', '') == '':
 dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
     tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
     random_seed = get_parameters()
+f_russo = get_f_russo()
 
 rd.seed(random_seed)
 
-ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay()
+ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay(f_russo)
 
 print('Cross correlation computation')
 C1C2C0 = correlations.cross_correlations(ksi_i_mu)

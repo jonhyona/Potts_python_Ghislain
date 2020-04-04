@@ -8,7 +8,7 @@ from and their behavior
 
 # Integration
 dt = 0.5
-tSim = 25000
+tSim = 2000
 # objective : tSim = 50000
 
 # Network
@@ -21,13 +21,13 @@ p = 50
 num_fact = 200
 p_fact = 50       #0.25*200
 dzeta = 0.02
-a_pf = 0.25
-eps = 0.001
+a_pf = 0.00
+eps = 1.
 
 # Building network
-cm = 25
+cm = 40
 a = 0.25
-f_russo = 0.8
+f_russo = 0.01
 
 # Network dynamics
 U = 0.4
@@ -45,10 +45,10 @@ g_A = 1
 beta = 11
 
 # Cue
-g = 50
+g = 12.5
 t_0 = 50
 tau = 1
-cue_ind = 1
+cue_ind = 4
 
 random_seed = 2021
 
