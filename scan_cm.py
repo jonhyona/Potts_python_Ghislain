@@ -29,6 +29,8 @@ dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
     tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
     random_seed = get_parameters()
 
+cue_ind = 0
+
 rd.seed(random_seed)
 
 tS = np.arange(0, tSim, dt)
@@ -37,7 +39,7 @@ nT = tS.shape[0]
 analyseTime = False
 analyseDivergence = False
 
-cm0 = 25
+cm0 = 98
 cm1 = 100
 
 cm_vect = np.linspace(cm0, cm1-1,cm1-cm0, dtype=int)
@@ -70,7 +72,7 @@ for ind_cm in tqdm(range(len(cm_vect))):
         iteration.iterate(J_i_j_k_l, delta__ksi_i_mu__k, tS[iT], analyseTime,
                           analyseDivergence, sig_i_k, r_i_k, r_i_S_A,
                           r_i_S_B, theta_i_k, h_i_k, m_mu, dt_r_i_S_A,
-                          dt_r_i_S_B, dt_r_i_k_act, dt_theta_i_k)
+                          dt_r_i_S_B, dt_r_i_k_act, dt_theta_i_k, cue_ind, t_0)
         if tS[iT] > t_0 + tau:
             ind_max = np.argmax(m_mu)
             max_m_mu = m_mu[ind_max]
@@ -81,15 +83,20 @@ for ind_cm in tqdm(range(len(cm_vect))):
                 eta  = True
             if max_m_mu < .01:
                 cpt_idle += 1
-                if cpt_idle > nT/10 and nT >= 1000:
-                    print("latchingDied")
+                if cpt_idle > nT/p and nT >= 1000:
+                    print("Lathing died, testing cue " + str(cue_ind))
                     l = tS[iT]-t_0
-                    break
+                    cue_ind += 1
+                    t_0 = tS[iT]
+                    if cue_ind == p-1:
+                        print("All cues tested")
+                        l = tS[iT]-t_0
+                        break
             else:
                 cpt_idle = 0
             ind_max_prev = ind_max
     d12 = d12/l
-    l = l/tSim
+    l = l/tSim/(cue_ind+1)
     Q_vect[ind_cm] = d12*l*eta
     l_vect[ind_cm] = l
     d12_vect[ind_cm] = d12
