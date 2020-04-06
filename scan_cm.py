@@ -28,7 +28,7 @@ if os.environ.get('DISPLAY', '') == '':
 dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
     tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
     random_seed = get_parameters()
-
+t_0_base = t_0
 cue_ind = 0
 
 rd.seed(random_seed)
@@ -39,13 +39,14 @@ nT = tS.shape[0]
 analyseTime = False
 analyseDivergence = False
 
-cm0 = 98
-cm1 = 100
+cm0 = 25
+cm1 = 75
 
 cm_vect = np.linspace(cm0, cm1-1,cm1-cm0, dtype=int)
 Q_vect = np.zeros(cm1 - cm0)
 l_vect = Q_vect.copy()
 d12_vect = Q_vect.copy()
+cue_ind_vect = Q_vect.copy()
 
 ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay()
 
@@ -62,6 +63,8 @@ for ind_cm in tqdm(range(len(cm_vect))):
     # print('Intégration')
     
     # Plot parameters
+    t_0 = t_0_base
+    cue_ind = 0
     cpt_idle = 0
     d12 = 0
     l = tSim-t_0
@@ -84,29 +87,31 @@ for ind_cm in tqdm(range(len(cm_vect))):
             if max_m_mu < .01:
                 cpt_idle += 1
                 if cpt_idle > nT/p and nT >= 1000:
-                    print("Lathing died, testing cue " + str(cue_ind))
-                    l = tS[iT]-t_0
                     cue_ind += 1
                     t_0 = tS[iT]
+                    cpt_idle = 0
+                    print("Lathing died, testing cue " + str(cue_ind))
                     if cue_ind == p-1:
                         print("All cues tested")
-                        l = tS[iT]-t_0
+                        l = tS[iT]-t_0_base
                         break
-            else:
-                cpt_idle = 0
             ind_max_prev = ind_max
-    d12 = d12/l
-    l = l/tSim/(cue_ind+1)
+    d12 = d12
     Q_vect[ind_cm] = d12*l*eta
     l_vect[ind_cm] = l
     d12_vect[ind_cm] = d12
+    cue_ind_vect[ind_cm] = cue_ind
 
-plt.subplot(311)
+plt.subplot(411)
 plt.plot(cm_vect, Q_vect)
-plt.subplot(312)
-plt.ylabel(r'\frac{d12/l}')
+plt.ylabel('Q')
+plt.subplot(412)
 plt.plot(cm_vect, d12_vect)
-plt.subplot(313)
-plt.plot(cm_vect, l_vect/tSim)
-plt.ylabel(r'\frac{l/t_Sim')
+plt.ylabel('d12')
+plt.subplot(413)
+plt.plot(cm_vect, l_vect)
+plt.ylabel('l')
+plt.subplot(414)
+plt.plot(cm_vect, cue_ind_vect)
+plt.ylabel('Cues number')
 plt.show()

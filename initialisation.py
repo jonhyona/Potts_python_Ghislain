@@ -24,6 +24,7 @@ def hebbian_tensor(delta__ksi_i_mu__k, cm):
     # mask = spsp.random(N, N, density=cm/N, random_state=rs, data_rvs=rvs)
     # mask -= spsp.diags(mask.diagonal())
     # mask.eliminate_zeros()
+    rd.seed(random_seed+2)
 
     mask = spsp.lil_matrix((N, N))
     deck = np.linspace(0, N-1, N, dtype=int)
