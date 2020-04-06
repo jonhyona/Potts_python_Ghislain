@@ -8,7 +8,7 @@ from and their behavior
 
 # Integration
 dt = 0.5
-tSim = 2000
+tSim = 10000
 # objective : tSim = 50000
 
 # Network
@@ -25,7 +25,7 @@ a_pf = 0.00
 eps = 1.
 
 # Building network
-cm = 40
+cm = 100
 a = 0.25
 f_russo = 0.01
 

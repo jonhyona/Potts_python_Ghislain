@@ -13,7 +13,7 @@ dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
 rd.seed(random_seed+2)
 
 
-def hebbian_tensor(delta__ksi_i_mu__k):
+def hebbian_tensor(delta__ksi_i_mu__k, cm):
     # class CustomRandomState(np.random.RandomState):
     #     def randint(self, k):
     #         i = rd.randint(k)   # def delta(i,j):
