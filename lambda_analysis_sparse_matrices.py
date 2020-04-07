@@ -101,7 +101,11 @@ for iT in tqdm(range(nT)):
                 l = tS[iT]
                 break
         else:
+<<<<<<< HEAD
             cpt_idle = 0    
+=======
+            cpt_idle = 0
+>>>>>>> scan_cm
         ind_max_prev = ind_max
 Q = d12*l*eta
 

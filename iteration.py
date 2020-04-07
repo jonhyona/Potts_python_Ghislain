@@ -45,12 +45,12 @@ def overlap(m_mu, delta__ksi_i_mu__k, sig_i_k):
         * np.transpose(delta__ksi_i_mu__k - a/S).dot(sig_i_k[active])
 
 
-def h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t):
+def h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t, cue_ind, t_0):
     sig_i_k_act = sig_i_k[active]
     h_i_k[:] = J_i_j_k_l.dot(sig_i_k_act)
     h_i_k += w*sig_i_k_act
     # h_i_k -= w/S*spreadActiveStates.dot(sumActiveStates.dot(sig_i_k_act))
-    h_i_k += cue(t, delta__ksi_i_mu__k)
+    h_i_k += cue(t, delta__ksi_i_mu__k, cue_ind, t_0)
 
 
 # def theta_i_k_der(dt_theta_i_k, sig_i_k, theta_i_k):
@@ -76,7 +76,7 @@ def sig_fun(sig_i_k, r_i_k):
     sig_i_k[:] = sig_i_k/Z_i
 
 
-def cue(t, delta__ksi_i_mu__k):
+def cue(t, delta__ksi_i_mu__k, cue_ind, t_0):
     return g * (t > t_0) \
         * 1/np.sqrt(2*np.pi*tau**2) * np.exp(-(t-t_0)**2/2/tau**2) \
         * delta__ksi_i_mu__k[:, cue_ind]
@@ -85,7 +85,7 @@ def cue(t, delta__ksi_i_mu__k):
 def iterate(J_i_j_k_l, delta__ksi_i_mu__k, t, analyseTime, analyseDivergence,
             sig_i_k, r_i_k, r_i_S_A, r_i_S_B, theta_i_k,
             h_i_k, m_mu, dt_r_i_S_A, dt_r_i_S_B, dt_r_i_k_act,
-            dt_theta_i_k):
+            dt_theta_i_k, cue_ind, t_0):
 
     t0 = time.time()
     sig_fun(sig_i_k, r_i_k)
@@ -95,7 +95,7 @@ def iterate(J_i_j_k_l, delta__ksi_i_mu__k, t, analyseTime, analyseDivergence,
     dt_theta_i_k[:] = (sig_i_k[active] - theta_i_k)/tau_2
     t3 = time.time()
 
-    h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t)
+    h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t, cue_ind, t_0)
     t5 = time.time()
 
     # r_i_k_act_der(dt_r_i_k_act, h_i_k, theta_i_k, r_i_k[active])
