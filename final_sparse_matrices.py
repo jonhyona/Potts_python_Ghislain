@@ -35,9 +35,9 @@ rd.seed(random_seed)
 
 
 # if 'ksi_i_mu'not in locals():
-ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay()
+ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay(f_russo)
 
-J_i_j_k_l = initialisation.hebbian_tensor(delta__ksi_i_mu__k, cm)
+J_i_j_k_l = initialisation.hebbian_tensor(delta__ksi_i_mu__k)
 
 r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
     dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k = initialisation.network()

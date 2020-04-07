@@ -14,7 +14,6 @@ from time import time
 dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
     tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
     random_seed = get_parameters()
-f_russo = get_f_russo()
 
 rd.seed(random_seed + 1)
 
@@ -139,7 +138,7 @@ def get_correlated():
     return ksi_i_mu, delta__ksi_i_mu__k
 
 
-def get_vijay():
+def get_vijay(f_russo):
     factors = rd.binomial(1, f_russo, (N,num_fact))
 
     sMax = S*np.ones(N,dtype='int')

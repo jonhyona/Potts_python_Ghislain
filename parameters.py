@@ -8,11 +8,7 @@ from and their behavior
 
 # Integration
 dt = 0.5
-<<<<<<< HEAD
 tSim = 25000
-=======
-tSim = 50000
->>>>>>> scan_cm
 # objective : tSim = 50000
 
 # Network
