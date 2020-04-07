@@ -96,10 +96,12 @@ for iT in tqdm(range(nT)):
 
         if max_m_mu < .01:
             cpt_idle += 1
-            if cpt_idle > nT/10 and nT >= 1000:
+            if cpt_idle > nT/100 and nT >= 1000:
                 print("latchingDied")
                 l = tS[iT]
                 break
+        else:
+            cpt_idle = 0
         ind_max_prev = ind_max
 Q = d12*l*eta
 

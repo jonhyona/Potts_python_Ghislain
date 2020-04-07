@@ -40,7 +40,7 @@ analyseTime = False
 analyseDivergence = False
 
 cm0 = 25
-cm1 = 75
+cm1 = 60
 
 cm_vect = np.linspace(cm0, cm1-1,cm1-cm0, dtype=int)
 Q_vect = np.zeros(cm1 - cm0)
@@ -81,22 +81,26 @@ for ind_cm in tqdm(range(len(cm_vect))):
             max_m_mu = m_mu[ind_max]
             m_mu[ind_max] = -np.inf
             max2_m_mu = np.max(m_mu)
-            d12 += dt*(max_m_mu- max2_m_mu)
             if not eta and ind_max != ind_max_prev:
                 eta  = True
+            if eta:
+                d12 += dt*(max_m_mu- max2_m_mu)
             if max_m_mu < .01:
                 cpt_idle += 1
                 if cpt_idle > nT/p and nT >= 1000:
                     cue_ind += 1
                     t_0 = tS[iT]
                     cpt_idle = 0
-                    print("Lathing died, testing cue " + str(cue_ind))
+                    eta = False
+                    ind_max_prev = cue_ind
+                    print("Latching died, testing cue " + str(cue_ind))
                     if cue_ind == p-1:
                         print("All cues tested")
                         l = tS[iT]-t_0_base
                         break
+            else:
+                cpt_idle = 0
             ind_max_prev = ind_max
-    d12 = d12
     Q_vect[ind_cm] = d12*l*eta
     l_vect[ind_cm] = l
     d12_vect[ind_cm] = d12
@@ -109,7 +113,7 @@ plt.subplot(412)
 plt.plot(cm_vect, d12_vect)
 plt.ylabel('d12')
 plt.subplot(413)
-plt.plot(cm_vect, l_vect)
+plt.plot(cm_vect, l_vect/(cue_ind_vect+1))
 plt.ylabel('l')
 plt.subplot(414)
 plt.plot(cm_vect, cue_ind_vect)
