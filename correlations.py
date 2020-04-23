@@ -8,64 +8,46 @@ active_diff_state(ksi1, ksi2)
     Proportion of units that are active in the different states
 cross_correlations(ksi_i_mu)
     C1, C2 for all the pairs of patterns
+overlap(ksi1, ksi2):
+    Overlap with one pattern if the network was fully on the other
+correlations_2D_hist(ksi_i_mu, C1C2C0=None):
+    Plot the cross-distribution of correlations. There is one scatter-plot
+    and one 2D-histogram
+correlations_1D_hist(ksi_i_mu, C1C2C0=None):
+    Plot distributions of correlations independently from one-another
 """
 import numpy as np
-from parameters import get_parameters
 import os
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from parameters import N, S, p, a
+
+# Required to plot via ssh
 if os.environ.get('DISPLAY', '') == '':
     print('no display found. Using non-interactive Agg backend')
     mpl.use('Agg')
 
-dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
-    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
-    random_seed = get_parameters()
-
 
 def active_same_state(ksi1, ksi2):
-    """ Proportion of units that are active in the same state
-
-    Parameters
-    ----------
-    ksi1 -- array of int
-        First memory
-    ksi2 -- array of int
-        Second memory
-
-    Returns
-    -------
-    C1 : float
-        Proportion of untis active in the same state in both patterns
-    """
-
+    """ Proportion of units active in the same state in both patterns"""
     return np.sum((ksi1 == ksi2)*(1-(ksi2 == S)), axis=0)/N/a
 
 
 def active_diff_state(ksi1, ksi2):
-    """ Proportion of units that are active in the different states
-
-    Parameters
-    ----------
-    ksi1 -- array of int
-        First memory
-    ksi2 -- array of int
-        Second memory
-
-    Returns
-    -------
-    C2 -- float
-        Proportion of units active but in different states in the two patterns
+    """  Proportion of units active but in different states in the two patterns
     """
-    return np.sum((1-(ksi1 == ksi2))*(1-(ksi2 == S))*(1-(ksi1 == S)), axis=0)/N/a
+    return np.sum((1-(ksi1 == ksi2))*(1-(ksi2 == S))*(1-(ksi1 == S)),
+                  axis=0)/N/a
 
 
 def active_inactive(ksi1, ksi2):
+    """ Proportion of units that are active in one state and inactive in the other
+    """
     return np.sum((ksi1 == S) * (1-(ksi2 == S)), axis=0)/N/a
 
 
 def cross_correlations(ksi_i_mu):
-    """ C1, C2 for all the pairs of patterns
+    """ C1, C2 for all pairs of patterns
 
     Parameters
     ----------
@@ -75,12 +57,11 @@ def cross_correlations(ksi_i_mu):
 
     Returns
     -------
-    m_mu -- 2D array
+    corr -- 2D array
         First column : C1
         Second column : C2
         Pairs are organized as (ksi_i, ksi_j with i < j)
     """
-
     items = [(i, j) for i in range(p) for j in range(i+1, p)]
 
     def fun(x):
@@ -93,18 +74,17 @@ def cross_correlations(ksi_i_mu):
 
 
 def overlap(ksi1, ksi2):
+    """ Overlap with one pattern if the network was fully on the other"""
     tmp = np.sum((ksi1 == ksi2) * (ksi1 != S))
     return 1/(a*N*(1-a/S)) \
         * (tmp - a/S*(a*N-tmp))
 
 
 def correlations_2D_hist(ksi_i_mu, C1C2C0=None):
+    """ Plot the cross-distribution of correlations. There is one scatter-plot
+    and one 2D-histogram"""
     if C1C2C0 is None:
         C1C2C0 = cross_correlations(ksi_i_mu)
-    # x0 = np.min(C1C2C0[:, 1])
-    # x1 = np.max(C1C2C0[:, 1])
-    # y0 = np.min(C1C2C0[:, 0])
-    # y1 = np.max(C1C2C0[:, 0])
     x0, y0, x1, y1 = (0, 0, 1, 1)
 
     plt.figure('correlation_2D_hist')
@@ -129,6 +109,7 @@ def correlations_2D_hist(ksi_i_mu, C1C2C0=None):
 
 
 def correlations_1D_hist(ksi_i_mu, C1C2C0=None):
+    """ Plot distributions of correlations independently from one-another"""
     if C1C2C0 is None:
         C1C2C0 = cross_correlations(ksi_i_mu)
 
@@ -150,9 +131,3 @@ def correlations_1D_hist(ksi_i_mu, C1C2C0=None):
     plt.ylabel('Active, inactive')
     plt.xlim((0, 1))
     plt.plot()
-
-
-# # ksi_i_mu, delta__ksi_i_mu__k = get_uncorrelated()
-
-# correlations_1D_hist(ksi_i_mu)
-# plt.show()

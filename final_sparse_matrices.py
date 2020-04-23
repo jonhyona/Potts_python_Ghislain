@@ -1,42 +1,29 @@
-# =============================================================================
-# First implementation of Potts Model
-#   Author : Ghislain de Labbey
-#   Date : 5th March 2020
-# =============================================================================
-
-# Required for ssh execution with plots
+"""Run the model initialized at rest and cued with a pattern
+"""
 import os
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
 # Standard libraries
 import numpy as np
 import numpy.random as rd
-# Fancy libraries, not necessary
+# Display time-evolution when integrating
 from tqdm import tqdm
 
 # Local modules
-from parameters import get_parameters
-from parameters import get_f_russo
+from parameters import dt, tSim, N, S, p, t_0, tau, random_seed
 import patterns
-import correlations
 import initialisation
 import iteration
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+# Required for ssh execution with plots
 if os.environ.get('DISPLAY', '') == '':
     print('no display found. Using non-interactive Agg backend')
     mpl.use('Agg')
 
-dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
-    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
-    random_seed = get_parameters()
-f_russo = get_f_russo()
-
 rd.seed(random_seed)
 
-
-# if 'ksi_i_mu'not in locals():
-ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay(f_russo)
-
+ksi_i_mu, delta__ksi_i_mu__k = patterns.get_uncorrelated()
 J_i_j_k_l = initialisation.hebbian_tensor(delta__ksi_i_mu__k)
 
 r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
@@ -66,7 +53,7 @@ outsider_saved = []
 indTrans = 0
 cpt_idle = 0
 d12 = 0
-l = tSim
+length = tSim
 eta = 0
 ind_max_prev = -1
 
@@ -88,7 +75,7 @@ for iT in tqdm(range(nT)):
         outsider = np.argmax(m_mu)
         max2_m_mu = m_mu[outsider]
 
-        d12 += dt*(max_m_mu- max2_m_mu)
+        d12 += dt*(max_m_mu - max2_m_mu)
 
         if ind_max != ind_max_prev:
             tTrans.append(tS[iT])
@@ -100,64 +87,44 @@ for iT in tqdm(range(nT)):
 
             indTrans += 1
             cpt_idle = 0
-            eta  = 1
+            eta = 1
 
         if max_m_mu < .01:
             cpt_idle += 1
             if cpt_idle > nT/10 and nT >= 1000:
                 print("latchingDied")
-                l = tS[iT]
+                length = tS[iT]
                 break
+        else:
+            cpt_idle = 0
         ind_max_prev = ind_max
 
-# Plot
 plt.close('all')
-
+units_to_show = np.linspace(0, N-1, 10, dtype=int)
+active_states_units_to_show = [i*(S+1) + k for i in units_to_show
+                               for k in range(S)]
+states_units_to_show = [i*S + k for i in units_to_show
+                        for k in range(S)]
 plt.figure(1)
 
-ax1 = plt.subplot(3, 2, 1)
-for i in range(0, N, N//10):
-    for k in range(S+1):
-        ax1.plot(tS[:], r_i_k_plot[:, i*(S+1)+k])
+ax_overlap = plt.subplot2grid((3, 2), (0, 0), colspan=2)
+ax_active_input = plt.subplot2grid((3, 2), (1, 0))
+ax_thresholds = plt.subplot2grid((3, 2), (1, 1))
+ax_active_activity = plt.subplot2grid((3, 2), (2, 0))
+ax_inactive_activity = plt.subplot2grid((3, 2), (2, 1))
 
-ax2 = plt.subplot(3, 2, 2)
-for i in range(0, N, N//10):
-    for k in range(S):
-        ax2.plot(tS[:], theta_i_k_plot[:, i*S + k])
+ax_overlap.plot(tS[:, None], m_mu_plot)
+ax_active_input.plot(tS[:, None], r_i_k_plot[:, active_states_units_to_show])
+ax_thresholds.plot(tS[:, None], theta_i_k_plot[:, states_units_to_show])
+ax_active_activity.plot(tS[:, None], sig_i_k_plot[:,
+                                                  active_states_units_to_show])
+ax_inactive_activity.plot(tS[:, None], sig_i_k_plot[:, units_to_show + S])
 
-ax3 = plt.subplot(3, 2, 3)
-for mu in range(p):
-    ax3.plot(tS, m_mu_plot[:, mu])
+ax_overlap.set_ylabel(r'$m_{\mu}$')
+ax_active_input.set_ylabel(r"$r_i^k$")
+ax_thresholds.set_ylabel(r"$\theta_i^k$")
+ax_active_activity.set_ylabel(r"$\sigma_i^k$")
+ax_inactive_activity.set_ylabel("$\sigma_i^0$")
 
-
-ax5 = plt.subplot(3, 2, 5)
-for i in range(0, N, N//10):
-    for k in range(S):
-        ax5.plot(tS, sig_i_k_plot[:, i*(S+1)+k])
-
-ax6 = plt.subplot(3, 2, 4)
-for i in range(0, N, N//10):
-    for k in range(S):
-        ax6.plot(tS, sig_i_k_plot[:, i*(S+1) + S])
-
-
-ax1.set_title("r")
-
-ax2.set_title("theta_k")
-
-ax3.set_title("overlap")
-
-ax5.set_title("sig_i_k")
-
-ax6.plot("sig_i_S")
-plt.figure(2)
-for mu in range(p):
-# for mu in retrieved_saved[:]:
-    plt.plot(tS, m_mu_plot[:, mu])
-plt.title('overlap')
-
-active = np.ones(N*(S+1), dtype='bool')
-active[S::S+1] = False
-print(sum(sig_i_k[active]))
-
+plt.tight_layout()
 plt.show()

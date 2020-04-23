@@ -1,36 +1,58 @@
+"""Initializing the network
+
+Routines listing
+----------------
+hebbian_tensor()
+    Computes the hebbian tensor J_i_k_k_l, i.e. interactions between units.
+network():
+    Initializing the network in stationnary-rest-state
+"""
 import scipy.sparse as spsp
-from scipy import stats
 import numpy as np
 import numpy.random as rd
-from parameters import get_parameters
 from scipy.optimize import root
 
-
-dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
-    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, ind_cue, \
-    random_seed = get_parameters()
+from parameters import N, S, p, a, U, beta, random_seed, cm, g_A
 
 rd.seed(random_seed+2)
 
 
 def hebbian_tensor(delta__ksi_i_mu__k):
-    # class CustomRandomState(np.random.RandomState):
-    #     def randint(self, k):
-    #         i = rd.randint(k)   # def delta(i,j):
-    #         return i - i % 2
-    # rs = CustomRandomState()
-    # rvs = stats.bernoulli(1).rvs
+    """
+    Computes the hebbian tensor J_i_k_k_l, i.e. interactions between units.
 
-    # mask = spsp.random(N, N, density=cm/N, random_state=rs, data_rvs=rvs)
-    # mask -= spsp.diags(mask.diagonal())
-    # mask.eliminate_zeros()
+    Parameters
+    ----------
+    delta__ksi_i_mu__k -- 2D array
+        Set of patterns stored in the network
 
-    mask = spsp.lil_matrix((N, N))
+    Returns
+    -------
+    J_i_j_k_l -- 2D array
+        Interaction tensor, given by the hebbian learning rule
+
+    Notes
+    -----
+    Intuitively, J_i_j_k_l should be of dimenion 4. However, in order to use
+    the sparse module from scipy, one has to have less than 2 dimensions. We
+    use the convention that unit i in state k is indexed by ii = i*S + k.
+    """
+
+    # Building the connectivity matrix
+    mask = spsp.lil_matrix((N, N))  # connectivity matrix
     deck = np.linspace(0, N-1, N, dtype=int)
     for i in range(N):
         rd.shuffle(deck)
         mask[i, deck[:int(cm)]] = True
-        mask[i,i] = False
+        cpt = 0
+        # Put diagonal coefficient to 0 keeping cm connections
+        while mask[i, i]:
+            mask[i, i] = False
+            if int(cm) + cpt < N:
+                mask[i, deck[int(cm)+cpt]] = True
+            cpt += 1
+
+    # Has to be expanded to fit the convention used in the notes
     kronMask = spsp.kron(mask, np.ones((S, S)))
     kronMask = kronMask.tobsr(blocksize=(S, S))
 
@@ -38,12 +60,49 @@ def hebbian_tensor(delta__ksi_i_mu__k):
         (delta__ksi_i_mu__k-a/S),
         np.transpose(delta__ksi_i_mu__k-a/S))
     J_i_j_k_l = kronMask.multiply(J_i_j_k_l)/(cm*a*(1-a/S))
-    
-    return J_i_j_k_l.tobsr(blocksize=(S, S))
+
+    return spsp.bsr_matrix(J_i_j_k_l, blocksize=(S, S))
 
 
 def network():
-    print('Initial conditions')
+    """
+    Initializing the network in stationnary-rest-state
+
+    Returns
+    -------
+    r_i_k -- 1D array
+        Input to unit i state k
+    sig_i_k -- 1D array
+        Activity of unit i state k
+    theta_i_k -- 1D array
+        Threshold for unit i state k
+    r_i_S_A -- 1D array
+        Activity of slow adaptive unit threshold
+    r_i_S_B -- 1D array
+        Activity of fast adaptive unit threshold
+    h_i_k -- 1D array
+        Field to unit i state k
+    m_mu -- 1D array
+        Overlap of the network with pattern mu
+    dt_r_i_k_act -- 1D array
+    dt_r_i_S_A -- 1D array
+    dt_r_i_S_B -- 1D arrat
+    dt_theta_i_k -- 1D array
+
+    Notes
+    -----
+    Things are a bit messy here.
+    Some variables contain nul states : r_i_k, sig_i_k... Some don't as
+    theta_i_k. In the notes I chose to treat null states separately, which I
+    hadn't in the beginning. So here one has to conventions:
+        - when the array contains information about nul states, unit i state k
+          is indexed by ii = i*(S+1) + k
+        - when it doesn't contain information about the null state, it should
+          be indexed by ii = i*S + k
+    This is messy and should be changed in future version by having separate
+    variables for the null state and active states
+
+    """
     active = np.ones(N*(S+1), dtype='bool')
     inactive = active.copy()
     active[S::S+1] = False
@@ -53,7 +112,6 @@ def network():
     r_i_k_act = r_i_k[active]
     r_i_S_A = g_A*r_i_k[inactive]
     r_i_S_B = (1-g_A)*r_i_k[inactive]
-    # # Initializing variables
     sig_i_k = np.zeros(N*(S+1))
 
     m_mu = np.zeros(p)
@@ -65,13 +123,11 @@ def network():
     dt_theta_i_k = np.zeros(theta_i_k.shape)
     h_i_k = np.zeros(theta_i_k.shape)
 
-    # print('Find roots')
-    # print('Find for A')
-    fun_r_i_S_A = lambda x: g_A*S/(S+np.exp(beta*(x+U))) - x
+    # Thresholds such that time-derivative are zero
+    def fun_r_i_S_A(x): g_A*S/(S+np.exp(beta*(x+U))) - x
     r_i_S_A = (root(fun_r_i_S_A, 0).x)[0]*np.ones(len(r_i_S_A))
 
-    # print('Find for B')
-    fun_r_i_S_B = lambda x: (1-g_A)*S/(S+np.exp(beta*(x+U))) - x
+    def fun_r_i_S_B(x): (1-g_A)*S/(S+np.exp(beta*(x+U))) - x
     r_i_S_B = (root(fun_r_i_S_B, 0).x)[0]*np.ones(len(r_i_S_B))
 
     theta_i_k = sig_i_k[active]
