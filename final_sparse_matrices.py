@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 # Standard libraries
 import numpy as np
 import numpy.random as rd
-# Display time-evolution when integrating
+# Display time-evolution when integrating. Can be deactivated if not possible
+# to install package
 from tqdm import tqdm
 
 # Local modules

@@ -7,57 +7,55 @@ from and their behavior
 """
 
 # Integration
-dt = 0.5
-tSim = 25000
-# objective : tSim = 50000
+# Integration
+dt = 1
+tSim = 2500
 
 # Network
+
 # Potts units
-N = 200
+N = 600
 S = 7
-p = 50
+p = 200
 
 # Pattern generation
 num_fact = 200
-p_fact = 50       #0.25*200
-dzeta = 0.02
-a_pf = 0.00
-eps = 1.
+p_fact = 40
+dzeta = 0.0000002
+a_pf = 0.004
+eps = 0.000001
+f_russo = 0.1
 
 # Building network
-cm = 45
+cm = 90
 a = 0.25
-f_russo = 0.01
 
 # Network dynamics
-U = 0.4
-T = 0.09
-w = 1.8
-b1 = 0.1
-b2 = 0.005
-b3 = 1
-tau_1 = 1/b1
-tau_2 = 1/b2
-tau_3_A = 1/b3
+U = 0.1
+beta = 12.5
+w = 0.45
+tau_1 = 3.33
+tau_2 = 100
+tau_3_A = 1e6
 tau_3_B = 1
 g_A = 1
-
-beta = 11
+T = 1/beta
 
 # Cue
-g = 12.5
-t_0 = 50
+cue_ind = 0
 tau = 1
-cue_ind = 4
-
-random_seed = 2021
+t_0 = 50
+g = 10.
 
 # Carefull : J_ii_kk : not w : has to delete one term!!!
+random_seed = 2021
+
 
 def get_parameters():
     return dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, \
         U, T, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, \
         cue_ind, random_seed
+
 
 def get_f_russo():
     return f_russo
