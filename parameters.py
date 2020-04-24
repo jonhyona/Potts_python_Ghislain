@@ -8,15 +8,15 @@ from and their behavior
 
 # Integration
 # Integration
-dt = 1
-tSim = 2500
+dt = 0.5
+tSim = 10000
 
 # Network
 
 # Potts units
-N = 600
+N = 200
 S = 7
-p = 200
+p = 50
 
 # Pattern generation
 num_fact = 200
@@ -27,25 +27,28 @@ eps = 0.000001
 f_russo = 0.1
 
 # Building network
-cm = 90
+cm = 50
 a = 0.25
 
 # Network dynamics
-U = 0.1
+U = 0.4
 beta = 12.5
-w = 0.45
-tau_1 = 3.33
-tau_2 = 100
-tau_3_A = 1e6
+w = 1.8
+b1 = 0.1
+b2 = 0.005
+b3 = 1
+tau_1 = 1/b1
+tau_2 = 1/b2
+tau_3_A = 1/b3
 tau_3_B = 1
 g_A = 1
 T = 1/beta
 
 # Cue
-cue_ind = 0
+cue_ind = 1
 tau = 1
 t_0 = 50
-g = 10.
+g = 20.
 
 # Carefull : J_ii_kk : not w : has to delete one term!!!
 random_seed = 2021
@@ -55,7 +58,6 @@ def get_parameters():
     return dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, \
         U, T, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, \
         cue_ind, random_seed
-
 
 def get_f_russo():
     return f_russo
