@@ -11,8 +11,8 @@ import scipy.sparse as spsp
 import numpy as np
 import numpy.random as rd
 from scipy.optimize import root
-
-from parameters import N, S, p, a, U, beta, random_seed, cm, g_A
+import iteration
+from parameters import N, S, p, a, U, beta, random_seed, cm, g_A, t_0
 
 rd.seed(random_seed+2)
 
@@ -64,7 +64,7 @@ def hebbian_tensor(delta__ksi_i_mu__k):
     return spsp.bsr_matrix(J_i_j_k_l, blocksize=(S, S))
 
 
-def network():
+def network(J_i_j_k_l, delta__ksi_i_mu__k):
     """
     Initializing the network in stationnary-rest-state
 
@@ -123,16 +123,33 @@ def network():
     dt_theta_i_k = np.zeros(theta_i_k.shape)
     h_i_k = np.zeros(theta_i_k.shape)
 
-    # Thresholds such that time-derivative are zero
-    def fun_r_i_S_A(x): g_A*S/(S+np.exp(beta*(x+U))) - x
-    r_i_S_A = (root(fun_r_i_S_A, 0).x)[0]*np.ones(len(r_i_S_A))
+    # # Thresholds such that time-derivative are zero
+    # def fun_r_i_S_A(x): g_A*S/(S+np.exp(beta*(x+U))) - x
+    # r_i_S_A = (root(fun_r_i_S_A, 0).x)[0]*np.ones(len(r_i_S_A))
 
-    def fun_r_i_S_B(x): (1-g_A)*S/(S+np.exp(beta*(x+U))) - x
-    r_i_S_B = (root(fun_r_i_S_B, 0).x)[0]*np.ones(len(r_i_S_B))
+    # def fun_r_i_S_B(x): (1-g_A)*S/(S+np.exp(beta*(x+U))) - x
+    # r_i_S_B = (root(fun_r_i_S_B, 0).x)[0]*np.ones(len(r_i_S_B))
 
-    theta_i_k = sig_i_k[active]
-    r_i_k[active] = r_i_k_act
-    r_i_k[inactive] = r_i_S_A+r_i_S_B
+    # theta_i_k = sig_i_k[active]
+    # r_i_k[active] = r_i_k_act
+    # r_i_k[inactive] = r_i_S_A+r_i_S_B
+
+    # s[i][k]=(-2*beta-2*exp(beta*U)-2*S+sqrt(pow(2*beta+2*exp(beta*U)+2*S,2)+8*(-beta*beta-2*beta*S+2*beta*S*exp(beta*U))))/(2*(-beta*beta-2*beta*S+2*beta*S*exp(beta*U))
+    sig_value = ((-2*beta-2*np.exp(beta*U)-2*S +
+                  np.sqrt((2*beta+2*np.exp(beta*U)+2*S)**2
+                          + 8*(-beta*beta-2*beta*S +
+                               2*beta*S*np.exp(beta*U)))) /
+                 (2*(-beta*beta-2*beta*S+2*beta*S*np.exp(beta*U))))
+    sig_i_k[active] = sig_value
+    sig_i_k[inactive] = 1 - S*sig_value
+    theta_i_k[:] = sig_i_k[active]
+
+    iteration.h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, 0,
+                        0, t_0)
+    r_i_k[active] = h_i_k
+    r_i_S_A = g_A * (1 - sig_i_k[inactive])
+    r_i_S_B = (1 - g_A) * (1 - sig_i_k[inactive])
+    r_i_k[inactive] = r_i_S_A + r_i_S_B
 
     return r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, \
         dt_r_i_S_A, dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k

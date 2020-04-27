@@ -9,14 +9,14 @@ from and their behavior
 # Integration
 # Integration
 dt = 1
-tSim = 2
+tSim = 2500
 
 # Network
 
 # Potts units
 N = 600
 S = 7
-p = 200
+p = 140
 
 # Pattern generation
 num_fact = 200
@@ -33,7 +33,7 @@ a = 0.25
 # Network dynamics
 U = 0.1
 T = 0.09
-w = 0.3
+w = 1.8
 # b1 = 0.1
 # b2 = 0.005
 # b3 = 1
@@ -48,7 +48,7 @@ beta = 1/T
 cue_ind = 1
 tau = 1
 t_0 = 50
-g = 0.
+g = 10.
 
 random_seed = 2021
 

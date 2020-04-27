@@ -30,7 +30,8 @@ ksi_i_mu, delta__ksi_i_mu__k = patterns.get_uncorrelated()
 J_i_j_k_l = initialisation.hebbian_tensor(delta__ksi_i_mu__k)
 
 r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
-    dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k = initialisation.network()
+    dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k \
+    = initialisation.network(J_i_j_k_l, delta__ksi_i_mu__k)
 
 print('Intégration')
 tS = np.arange(0, tSim, dt)
@@ -58,7 +59,7 @@ length = tSim
 eta = 0                         # Did a transition occur?
 previously_retrieved = -1
 
-for cue_ind in range(1):
+for cue_ind in range(2, 3):
     print('Cue = pattern ' + str(cue_ind))
 
     r_i_k_plot = np.zeros((nSnap, N*(S+1)))
@@ -72,7 +73,8 @@ for cue_ind in range(1):
     cpt_idle = 0
 
     r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
-        dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k = initialisation.network()
+        dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k = initialisation.network(
+            J_i_j_k_l, delta__ksi_i_mu__k)
 
     for iT in tqdm(range(nT)):
         iteration.iterate(J_i_j_k_l, delta__ksi_i_mu__k, tS[iT], analyseTime,
