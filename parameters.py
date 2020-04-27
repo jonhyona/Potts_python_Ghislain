@@ -8,15 +8,15 @@ from and their behavior
 
 # Integration
 # Integration
-dt = 0.5
-tSim = 10000
+dt = 1
+tSim = 2
 
 # Network
 
 # Potts units
-N = 200
+N = 600
 S = 7
-p = 50
+p = 200
 
 # Pattern generation
 num_fact = 200
@@ -27,30 +27,29 @@ eps = 0.000001
 f_russo = 0.1
 
 # Building network
-cm = 50
+cm = 90
 a = 0.25
 
 # Network dynamics
-U = 0.4
-beta = 12.5
-w = 1.8
-b1 = 0.1
-b2 = 0.005
-b3 = 1
-tau_1 = 1/b1
-tau_2 = 1/b2
-tau_3_A = 1/b3
+U = 0.1
+T = 0.09
+w = 0.3
+# b1 = 0.1
+# b2 = 0.005
+# b3 = 1
+tau_1 = 3.3
+tau_2 = 100
+tau_3_A = 1e6
 tau_3_B = 1
 g_A = 1
-T = 1/beta
+beta = 1/T
 
 # Cue
 cue_ind = 1
 tau = 1
 t_0 = 50
-g = 20.
+g = 0.
 
-# Carefull : J_ii_kk : not w : has to delete one term!!!
 random_seed = 2021
 
 

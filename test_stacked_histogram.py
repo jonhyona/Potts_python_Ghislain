@@ -60,7 +60,7 @@ eta = 0                         # Did a transition occur?
 previously_retrieved = -1
 
 
-for cue_ind in range(p):
+for cue_ind in range(4):
     print('Cue = pattern ' + str(cue_ind))
 
     r_i_k_plot = np.zeros((nSnap, N*(S+1)))
@@ -275,7 +275,7 @@ plt.stackplot(lambda_plot,
               np.sum(cat_events_4) * estimates_cat_events_4.evaluate(lambda_plot))
 
 plt.figure(33)
-plt.plot(plt.plot(lambda_plot,
-         np.sum(cat_events_1) * estimates_cat_events_1.evaluate(lambda_plot)))
+plt.plot(lambda_plot, np.sum(cat_events_1) *
+         estimates_cat_events_1.evaluate(lambda_plot))
 
 plt.show()

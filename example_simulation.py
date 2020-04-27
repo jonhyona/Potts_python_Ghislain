@@ -58,8 +58,7 @@ length = tSim
 eta = 0                         # Did a transition occur?
 previously_retrieved = -1
 
-
-for cue_ind in range(p):
+for cue_ind in range(1):
     print('Cue = pattern ' + str(cue_ind))
 
     r_i_k_plot = np.zeros((nSnap, N*(S+1)))
