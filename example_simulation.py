@@ -59,7 +59,7 @@ length = tSim
 eta = 0                         # Did a transition occur?
 previously_retrieved = -1
 
-for cue_ind in range(2, 3):
+for cue_ind in range(1):
     print('Cue = pattern ' + str(cue_ind))
 
     r_i_k_plot = np.zeros((nSnap, N*(S+1)))
@@ -96,7 +96,8 @@ for cue_ind in range(2, 3):
             max2_m_mu = m_mu[outsider]
             d12 += dt*(max_m_mu - max2_m_mu)
 
-            if retrieved_pattern != previously_retrieved:
+            if retrieved_pattern != previously_retrieved \
+               and not waiting_validation:
                 tmp = [tS[iT], max_m_mu, retrieved_pattern,
                        previously_retrieved, outsider, max_m_mu, max2_m_mu]
                 waiting_validation = True
@@ -144,12 +145,13 @@ l_mid_high_cor = r'$0.6 \leq \lambda < 0.8$'
 high_cor = 0.8 <= lamb
 l_high_cor = r'$0.8 \leq \lambda $'
 
-x0 = np.min(C1C2C0[:, 1])
-x1 = np.max(C1C2C0[:, 1])
-y0 = np.min(C1C2C0[:, 0])
-y1 = np.max(C1C2C0[:, 0])
+x0 = np.min(C1C2C0[:, 1]) - 5*shift
+x1 = np.max(C1C2C0[:, 1]) + 5*shift
+y0 = np.min(C1C2C0[:, 0]) - 5*shift
+y1 = np.max(C1C2C0[:, 0]) + 5*shift
 bins_y = np.arange(y0-shift, y1 + 1/N/a-shift, 1/N/a)
 bins_x = np.arange(x0-shift, x1 + 1/N/a-shift, 1/N/a)
+bins_z = np.arange(0, 1, 1/N/a)
 
 XX = correlations.active_diff_state(ksi_i_mu[:, retrieved_saved],
                                     ksi_i_mu[:, outsider_saved])
@@ -216,9 +218,46 @@ plt.hist2d(XX, lamb, bins=(bins_x, bins_lamb))
 plt.xlabel('C2')
 plt.colorbar()
 plt.subplot(133)
-plt.hist2d(ZZ, lamb)
+plt.hist2d(ZZ, lamb, bins=(bins_z, bins_lamb))
 plt.xlabel('Active Inactive')
 plt.colorbar()
+
+plt.tight_layout()
+
+plt.figure('Compared distributions')
+max_C1 = np.max(C1C2C0[:, 0])
+max_C2 = np.max(C1C2C0[:, 1])
+max_C0 = np.max(C1C2C0[:, 2])
+
+min_C1 = np.min(C1C2C0[:, 0])
+min_C2 = np.min(C1C2C0[:, 1])
+min_C0 = np.min(C1C2C0[:, 2])
+
+ax_C1_pattern = plt.subplot(231)
+ax_C2_pattern = plt.subplot(232)
+ax_C0_pattern = plt.subplot(233)
+
+ax_C1_event = plt.subplot(234)
+ax_C2_event = plt.subplot(235)
+ax_C0_event = plt.subplot(236)
+
+ax_C1_pattern.hist(C1C2C0[:, 0])
+ax_C2_pattern.hist(C1C2C0[:, 1])
+ax_C0_pattern.hist(C1C2C0[:, 2])
+
+ax_C1_event.hist(YY)
+ax_C2_event.hist(XX)
+ax_C0_event.hist(ZZ)
+
+ax_C1_event.set_xlim(min_C1, max_C1)
+ax_C2_event.set_xlim(min_C1, max_C2)
+ax_C0_event.set_xlim(min_C0, max_C0)
+
+ax_C1_pattern.set_xlim(min_C1, max_C1)
+ax_C2_pattern.set_xlim(min_C1, max_C2)
+ax_C0_pattern.set_xlim(min_C0, max_C0)
+
+plt.tight_layout()
 
 units_to_show = np.linspace(0, N-1, 10, dtype=int)
 active_states_units_to_show = [i*(S+1) + k for i in units_to_show
@@ -237,7 +276,7 @@ ax_active_input.plot(tS[:, None], r_i_k_plot[:, active_states_units_to_show])
 ax_thresholds.plot(tS[:, None], theta_i_k_plot[:, states_units_to_show])
 ax_active_activity.plot(tS[:, None], sig_i_k_plot[:,
                                                   active_states_units_to_show])
-ax_inactive_activity.plot(tS[:, None], sig_i_k_plot[:, units_to_show + S])
+ax_inactive_activity.plot(tS[:, None], r_i_k_plot[:, (S+1)*units_to_show + S])
 
 ax_overlap.set_ylabel(r'$m_{\mu}$')
 ax_overlap.set_title(
@@ -245,7 +284,17 @@ ax_overlap.set_title(
 ax_active_input.set_ylabel(r"$r_i^k$")
 ax_thresholds.set_ylabel(r"$\theta_i^k$")
 ax_active_activity.set_ylabel(r"$\sigma_i^k$")
-ax_inactive_activity.set_ylabel("$\sigma_i^0$")
+ax_inactive_activity.set_ylabel(r"$\theta_i^0$")
 
 plt.tight_layout()
+plt.show()
+
+
+plt.figure('histogram')
+plt.hist2d(C1C2C0[:, 0], C1C2C0[:, 1])
+plt.xlabel('C1')
+plt.ylabel('C2')
+plt.xlim(0, 0.4)
+plt.ylim(0, 0.4)
+plt.colorbar()
 plt.show()
