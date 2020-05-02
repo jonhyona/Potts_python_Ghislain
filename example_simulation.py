@@ -8,9 +8,6 @@ import matplotlib.pyplot as plt
 # Standard libraries
 import numpy as np
 import numpy.random as rd
-# Display time-evolution when integrating. Can be deactivated if not possible
-# to install package
-from tqdm import tqdm
 
 # Local modules
 from parameters import dt, tSim, N, S, p, t_0, tau, random_seed, cm, a
@@ -76,7 +73,7 @@ for cue_ind in range(1):
         dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k = initialisation.network(
             J_i_j_k_l, delta__ksi_i_mu__k)
 
-    for iT in tqdm(range(nT)):
+    for iT in range(nT):
         iteration.iterate(J_i_j_k_l, delta__ksi_i_mu__k, tS[iT], analyseTime,
                           analyseDivergence, sig_i_k, r_i_k, r_i_S_A,
                           r_i_S_B, theta_i_k, h_i_k, m_mu, dt_r_i_S_A,
