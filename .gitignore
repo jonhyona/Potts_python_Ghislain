@@ -1,0 +1,11 @@
+# Lines starting with `#` are comments.
+
+
+__pycache__/
+scan_corr/
+
+*.pkl
+\#*
+.#*
+*~
+*.png
