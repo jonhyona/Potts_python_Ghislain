@@ -4,138 +4,44 @@ main parameters, as well as statistics on patterns and transitions that occured
 import os
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import pickle
 
 # Standard libraries
 import numpy as np
 import numpy.random as rd
 
 # Local modules
-from parameters import dt, tSim, N, S, p, t_0, tau, random_seed, cm, a, g_A
-import patterns
+from parameters import set_name
 import initialisation
 import iteration
 import correlations
 import seaborn as sns
 from tqdm import tqdm
 
+
 # Required for ssh execution with plots
 if os.environ.get('DISPLAY', '') == '':
     print('no display found. Using non-interactive Agg backend')
     mpl.use('Agg')
 
-rd.seed(random_seed)
+try:
+    f = open(set_name, 'rb')
+    dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo, cm, a, U, \
+        w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0, g, \
+        random_seed, p_0, n_p, nSnap \
+        tS, tSnap, J_i_j_k_l, ksi_i_mu, delta__ksi_i_mu__k, \
+        transition_time, lamb, retrieved_saved, previously_retrieved_saved, \
+        outsider_saved, max_m_mu_saved, max2_m_mu_saved, \
+        r_i_k_plot, m_mu_plot, sig_i_k_plot, theta_i_k_plot = pickle.load(f)
+except IOError:
+    exec(open(set_name).read())
+finally:
+    f.close()
 
-ksi_i_mu, delta__ksi_i_mu__k = patterns.get_uncorrelated()
-J_i_j_k_l = initialisation.hebbian_tensor(delta__ksi_i_mu__k)
-
-r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
-    dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k \
-    = initialisation.network(J_i_j_k_l, delta__ksi_i_mu__k)
-
-print('Intégration')
-tS = np.arange(0, tSim, dt)
-nT = tS.shape[0]
-
-# Plot parameters
-nSnap = nT
-
-analyseTime = False
-analyseDivergence = False
-
-# Plot parameters
-lamb = []                       # Stores crossovers
-transition_time = []
-retrieved_saved = []
-max_m_mu_saved = []
-max2_m_mu_saved = []
-# Outsider is the pattern with second highest overlap
-outsider_saved = []
-previously_retrieved_saved = []
-transition_counter = 0
-cpt_idle = 0
-d12 = 0                         # Latching quality metric
-length = tSim
-eta = 0                         # Did a transition occur?
-previously_retrieved = -1
-
-p_0 = 0
-n_p = p
-for cue_ind in range(p_0, p_0 + n_p):
-    print('Cue = pattern ' + str(cue_ind))
-
-    r_i_k_plot = np.zeros((nSnap, N*(S+1)))
-    m_mu_plot = np.zeros((nSnap, p))
-    theta_i_k_plot = np.zeros((nSnap, N*S))
-    sig_i_k_plot = np.zeros((nSnap, N*(S+1)))
-
-    previously_retrieved = cue_ind
-    waiting_validation = False
-    eta = False
-    cpt_idle = 0
-
-    r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
-        dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k = initialisation.network(
-            J_i_j_k_l, delta__ksi_i_mu__k)
-
-    for iT in tqdm(range(nT)):
-        iteration.iterate(J_i_j_k_l, delta__ksi_i_mu__k, tS[iT], analyseTime,
-                          analyseDivergence, sig_i_k, r_i_k, r_i_S_A,
-                          r_i_S_B, theta_i_k, h_i_k, m_mu, dt_r_i_S_A,
-                          dt_r_i_S_B, dt_r_i_k_act, dt_theta_i_k, cue_ind, t_0)
-
-        # Saving data for plots
-        r_i_k_plot[iT, :] = r_i_k
-        m_mu_plot[iT, :] = m_mu
-        sig_i_k_plot[iT, :] = sig_i_k
-        theta_i_k_plot[iT, :] = theta_i_k
-
-        if tS[iT] > t_0 + 10*tau:
-            retrieved_pattern = np.argmax(m_mu)
-            max_m_mu = m_mu[retrieved_pattern]
-            m_mu[retrieved_pattern] = - np.inf
-            outsider = np.argmax(m_mu)
-            max2_m_mu = m_mu[outsider]
-            d12 += dt*(max_m_mu - max2_m_mu)
-
-            if retrieved_pattern != previously_retrieved \
-               and not waiting_validation:
-                tmp = [tS[iT], max_m_mu, retrieved_pattern,
-                       previously_retrieved, outsider, max_m_mu, max2_m_mu]
-                waiting_validation = True
-            # Transitions are validated only if the pattern reaches an overlap
-            # of 0.5. This avoid to record low-crossover transitions when
-            # latching dies
-            if waiting_validation and max_m_mu > .5:
-                waiting_validation = False
-                eta = True
-                transition_time.append(tmp[0])
-                lamb.append(tmp[1])
-                retrieved_saved.append(tmp[2])
-                previously_retrieved_saved.append(tmp[3])
-                outsider_saved.append(tmp[4])
-                max_m_mu_saved.append(tmp[5])
-                max2_m_mu_saved.append(tmp[6])
-
-                transition_counter += 1
-                cpt_idle = 0
-                eta = True
-            previously_retrieved = retrieved_pattern
-
-            if max_m_mu < .01:
-                cpt_idle += 1
-                if cpt_idle > dt*100 and nT >= 1000:
-                    print('Latching died')
-                    break
-            else:
-                cpt_idle = 0
 
 s = 2
 shift = 1/N/a/5                 # In order categories to be visible in scatter
-
 lamb = np.array(lamb)
-bins_lamb = np.linspace(0, 1, 10)
-gap = np.logical_and(lamb > 0.25, lamb < 0.55)
-C1C2C0 = correlations.cross_correlations(ksi_i_mu)
 
 low_cor = lamb < 0.2
 l_low_cor = r'$\lambda < 0.2$'
@@ -146,6 +52,7 @@ l_mid_high_cor = r'$0.6 \leq \lambda < 0.8$'
 high_cor = 0.8 <= lamb
 l_high_cor = r'$0.8 \leq \lambda $'
 
+C1C2C0 = correlations.cross_correlations(ksi_i_mu)
 x0 = np.min(C1C2C0[:, 1]) - 5*shift
 x1 = np.max(C1C2C0[:, 1]) + 5*shift
 y0 = np.min(C1C2C0[:, 0]) - 5*shift
@@ -161,8 +68,7 @@ YY = correlations.active_same_state(ksi_i_mu[:, retrieved_saved],
 ZZ = correlations.active_inactive(ksi_i_mu[:, retrieved_saved],
                                   ksi_i_mu[:, outsider_saved])
 
-# %%Plot
-plt.close('all')
+plt.ion()
 
 plt.figure(2)
 plt.plot(tS[:, None], m_mu_plot)
@@ -178,4 +84,39 @@ plt.ylabel('Density')
 plt.title(r'$\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
 plt.savefig('hist_kwang_il_gA'+str(int(10*g_A))+'.png')
 
-# plt.show()
+ax1 = plt.subplot(221)
+ax1.scatter(XX[low_cor]+shift, YY[low_cor]+shift, s=s, c='orange',
+            label=l_low_cor)
+ax1.scatter(XX[mid_low_cor]+shift, YY[mid_low_cor]-shift, s=s, c='cyan',
+            label=l_mid_low_cor)
+ax1.scatter(XX[mid_high_cor]-shift, YY[mid_high_cor]+shift, s=s, c='m',
+            label=l_mid_high_cor)
+ax1.scatter(XX[high_cor], YY[high_cor], s=s, c='g', label=l_high_cor)
+ax1.legend()
+ax1.set_ylabel('C1')
+ax1.set_xlabel('C2')
+ax1.set_xlim(x0, x1)
+ax1.set_ylim(y0, y1)
+ax1.set_title('Correlations between transition patterns')
+
+ax2 = plt.subplot(222)
+plt.hist2d(XX, YY, bins=(bins_x, bins_y))
+ax2.set_xlabel('C2')
+ax2.set_xlim(x0, x1)
+ax2.set_ylim(y0, y1)
+plt.colorbar()
+
+ax3 = plt.subplot(223)
+plt.scatter(C1C2C0[:, 1], C1C2C0[:, 0], s=s)
+ax3.set_xlim(x0, x1)
+ax3.set_ylim(y0, y1)
+ax3.set_title('Correlations between all patterns')
+
+ax4 = plt.subplot(224)
+plt.hist2d(C1C2C0[:, 1], C1C2C0[:, 0], bins=(bins_x, bins_y))
+plt.colorbar()
+ax4.set_xlim(x0, x1)
+ax4.set_ylim(y0, y1)
+
+plt.tight_layout()
+plt.show()

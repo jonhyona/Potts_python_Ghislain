@@ -10,6 +10,9 @@ from and their behavior
 # Integration
 dt = 1.
 tSim = 10000
+p_0 = 0
+n_p = 1
+nSnap = min(int(tSim/dt), 1000)
 
 # Network
 
@@ -53,6 +56,9 @@ g = 10.
 
 random_seed = 2021
 
+set_name = str(hash((dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps,
+                     f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A,
+                     beta, tau, t_0, g, random_seed, p_0, n_p, nSnap))) + '.pkl'
 
 def get_parameters():
     return dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, \

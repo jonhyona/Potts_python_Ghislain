@@ -93,7 +93,8 @@ for cue_ind in range(1):
             max2_m_mu = m_mu[outsider]
             d12 += dt*(max_m_mu - max2_m_mu)
 
-            if retrieved_pattern != previously_retrieved:
+            if retrieved_pattern != previously_retrieved \
+               and not waiting_validation:
                 tmp = [tS[iT], max_m_mu, retrieved_pattern,
                        previously_retrieved, outsider, max_m_mu, max2_m_mu]
                 waiting_validation = True
@@ -105,7 +106,7 @@ for cue_ind in range(1):
                 eta = True
                 transition_time.append(tmp[0])
                 lamb.append(tmp[1])
-                retrieved_saved.append(tmp[2])
+                retrieved_saved.append(retrieved_pattern)
                 previously_retrieved_saved.append(tmp[3])
                 outsider_saved.append(tmp[4])
                 max_m_mu_saved.append(tmp[5])
@@ -149,11 +150,11 @@ bins_y = np.arange(y0-shift, y1 + 1/N/a-shift, 1/N/a)
 bins_x = np.arange(x0-shift, x1 + 1/N/a-shift, 1/N/a)
 
 XX = correlations.active_diff_state(ksi_i_mu[:, retrieved_saved],
-                                    ksi_i_mu[:, outsider_saved])
+                                    ksi_i_mu[:, previously_retrieved_saved])
 YY = correlations.active_same_state(ksi_i_mu[:, retrieved_saved],
-                                    ksi_i_mu[:, outsider_saved])
+                                    ksi_i_mu[:, previously_retrieved_saved])
 ZZ = correlations.active_inactive(ksi_i_mu[:, retrieved_saved],
-                                  ksi_i_mu[:, outsider_saved])
+                                  ksi_i_mu[:, previously_retrieved_saved])
 
 # %%Plot
 plt.close('all')
@@ -227,7 +228,6 @@ plt.plot(lambda_plot,
 plt.plot(lambda_plot,
          np.sum(cat_pattern_4) * estimates_cat_pattern_4.evaluate(lambda_plot),
          label=r'high $C_1$, high $C_2$')
-plt.plot(lambda_plot, len(lamb) * st.gaussian_kde(lamb).evaluate(lambda_plot), label='Total')
 
 plt.title(r'cm=' + str(cm) + r' $\langle C_1 \rangle_{\mu}$=' + str("%.2f" % mean_patterns_C1) + r' $\langle C_2 \rangle_{\mu}$=' + str("%.2f" % mean_patterns_C2))
 plt.legend()
@@ -246,7 +246,6 @@ plt.plot(lambda_plot,
          np.sum(cat_events_3) * estimates_cat_events_3.evaluate(lambda_plot))
 plt.plot(lambda_plot,
          np.sum(cat_events_4) * estimates_cat_events_4.evaluate(lambda_plot))
-plt.plot(lambda_plot, len(lamb) * st.gaussian_kde(lamb).evaluate(lambda_plot))
 plt.title(r'cm=' + str(cm) + r' $\overline{C_1}$=' + str("%.2f" % mean_events_C1) + r' $\overline{C_2}$=' + str("%.2f" % mean_events_C2))
 plt.xlabel(r'$\lambda$')
 plt.tight_layout()
@@ -271,8 +270,75 @@ plt.stackplot(lambda_plot,
               np.sum(cat_events_3) * estimates_cat_events_3.evaluate(lambda_plot),
               np.sum(cat_events_4) * estimates_cat_events_4.evaluate(lambda_plot))
 
-plt.figure(33)
-plt.plot(lambda_plot, np.sum(cat_events_1) *
-         estimates_cat_events_1.evaluate(lambda_plot))
+plt.figure('Correlations between transition patterns')
+ax1 = plt.subplot(221)
+ax1.scatter(XX[low_cor]+shift, YY[low_cor]+shift, s=s, c='orange',
+            label=l_low_cor)
+ax1.scatter(XX[mid_low_cor]+shift, YY[mid_low_cor]-shift, s=s, c='cyan',
+            label=l_mid_low_cor)
+ax1.scatter(XX[mid_high_cor]-shift, YY[mid_high_cor]+shift, s=s, c='m',
+            label=l_mid_high_cor)
+ax1.scatter(XX[high_cor], YY[high_cor], s=s, c='g', label=l_high_cor)
+ax1.legend()
+
+
+
+low_cor = lamb < 0.2
+l_low_cor = r'$\lambda < 0.2$'
+mid_low_cor = np.logical_and(0.2 <= lamb, lamb < 0.6)
+l_mid_low_cor = r'$0.2 \leq \lambda < 0.6$'
+mid_high_cor = np.logical_and(0.6 <= lamb, lamb < 0.8)
+l_mid_high_cor = r'$0.6 \leq \lambda < 0.8$'
+high_cor = 0.8 <= lamb
+l_high_cor = r'$0.8 \leq \lambda $'
+
+x0 = np.min(C1C2C0[:, 1]) - 5*shift
+x1 = np.max(C1C2C0[:, 1]) + 5*shift
+y0 = np.min(C1C2C0[:, 0]) - 5*shift
+y1 = np.max(C1C2C0[:, 0]) + 5*shift
+bins_y = np.arange(y0-shift, y1 + 1/N/a-shift, 1/N/a)
+bins_x = np.arange(x0-shift, x1 + 1/N/a-shift, 1/N/a)
+bins_z = np.arange(0, 1, 1/N/a)
+ax1.set_ylabel('C1')
+ax1.set_xlabel('C2')
+ax1.set_xlim(x0, x1)
+ax1.set_ylim(y0, y1)
+ax1.set_title('Correlations between transition patterns')
+
+ax2 = plt.subplot(222)
+plt.hist2d(XX, YY, bins=(bins_x, bins_y))
+ax2.set_xlabel('C2')
+ax2.set_xlim(x0, x1)
+ax2.set_ylim(y0, y1)
+plt.colorbar()
+
+ax3 = plt.subplot(223)
+plt.scatter(C1C2C0[:, 1], C1C2C0[:, 0], s=s)
+ax3.set_xlim(x0, x1)
+ax3.set_ylim(y0, y1)
+ax3.set_title('Correlations between all patterns')
+
+ax4 = plt.subplot(224)
+plt.hist2d(C1C2C0[:, 1], C1C2C0[:, 0], bins=(bins_x, bins_y))
+plt.colorbar()
+ax4.set_xlim(x0, x1)
+ax4.set_ylim(y0, y1)
+
+plt.figure('Lambda, C')
+plt.subplot(131)
+plt.hist2d(YY, lamb, bins=(bins_y, bins_lamb))
+plt.xlabel('C1')
+plt.ylabel(r'$\lambda$')
+plt.colorbar()
+plt.subplot(132)
+plt.hist2d(XX, lamb, bins=(bins_x, bins_lamb))
+plt.xlabel('C2')
+plt.colorbar()
+plt.subplot(133)
+plt.hist2d(ZZ, lamb, bins=(bins_z, bins_lamb))
+plt.xlabel('Active Inactive')
+plt.colorbar()
+
+plt.tight_layout()
 
 plt.show()
