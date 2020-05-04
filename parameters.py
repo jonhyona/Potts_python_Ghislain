@@ -44,7 +44,7 @@ tau_3_A = 5
 tau_3_B = 1e5
 g_A = 1.
 beta = 11
-kwangil.ryom@sissa.it
+
 # Cue
 cue_ind = 1
 tau = 1
