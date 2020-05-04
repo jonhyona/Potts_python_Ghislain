@@ -8,8 +8,8 @@ from and their behavior
 
 # Integration
 # Integration
-dt = 1.
-tSim = 10000
+dt = 1
+tSim = 2500
 
 # Network
 
@@ -31,7 +31,7 @@ a = 0.25
 
 # Network dynamics
 U = 0.1
-w = 1.3
+w = 1.
 # b1 = 0.1
 # b2 = 0.005
 # b3 = 1
@@ -41,15 +41,15 @@ tau_3_A = 5
 # tau_1 = 20
 # tau_2 = 200
 # tau_3_A = 10
-tau_3_B = 1e5
-g_A = 1.
+tau_3_B = 10e5
+g_A = 1
 beta = 11
-kwangil.ryom@sissa.it
+
 # Cue
-cue_ind = 1
+cue_ind = 0
 tau = 1
 t_0 = 50
-g = 10.
+g = 100.
 
 random_seed = 2021
 
