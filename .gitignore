@@ -1,7 +1,7 @@
 # Lines starting with `#` are comments.
 
 
-_pycache_/
+__pycache__/
 scan_corr/
 
 #*
