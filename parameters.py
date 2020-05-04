@@ -10,8 +10,6 @@ from and their behavior
 # Integration
 dt = 1.
 tSim = 10000
-p_0 = 0
-n_p = 1
 nSnap = min(int(tSim/dt), 1000)
 
 # Network
@@ -45,7 +43,7 @@ tau_3_A = 5
 # tau_2 = 200
 # tau_3_A = 10
 tau_3_B = 1e5
-g_A = 1.
+g_A = 0
 beta = 11
 
 # Cue
@@ -53,6 +51,8 @@ cue_ind = 1
 tau = 1
 t_0 = 50
 g = 10.
+p_0 = 0
+n_p = p
 
 random_seed = 2021
 

@@ -71,7 +71,7 @@ ZZ = correlations.active_inactive(ksi_i_mu[:, retrieved_saved],
 plt.ion()
 
 plt.figure(2)
-plt.plot(tS[:, None], m_mu_plot)
+plt.plot(tSnap[:, None], m_mu_plot)
 plt.xlabel('Time')
 plt.ylabel('Overlap')
 plt.title(r'$\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
