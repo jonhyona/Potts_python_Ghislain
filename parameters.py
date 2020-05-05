@@ -45,7 +45,6 @@ tau_3_A = 5
 tau_3_B = 1e5
 g_A = 0.5
 beta = 11
-T = 1/beta
 
 # Cue
 cue_ind = 1
