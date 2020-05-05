@@ -21,7 +21,8 @@ import numpy.random as rd
 import numpy as np
 from parameters import N, S, p, num_fact, p_fact, dzeta, a_pf, eps, a, \
     f_russo, random_seed
-
+import csv
+import pandas as pd
 rd.seed(random_seed + 1)
 
 
@@ -220,17 +221,16 @@ def get_2_patterns(C1, C2):
     return ksi_i_mu, delta__ksi_i_mu__k
 
 
+def readcsv(filename):
+    data = pd.read_csv(filename, header=None)
+    return(np.array(data))
+
+
 def get_from_file(file_name):
-    f = open(file_name, "r")
-    contents = f.readlines()
     ksi_i_mu = np.zeros((N, p), dtype=int)
-    mu = 0
-    ii = 0
-    for s1 in contents:
-        print(ii, mu)
-        print(s1)
-        ksi_i_mu[ii, mu] = s1
-        ii += 1
-        if ii % N == 0:
-            ii = 0
-            mu += 1
+    ksi_i_mu[:, :] = np.transpose(readcsv(file_name))
+    delta__ksi_i_mu__k = np.kron(ksi_i_mu, np.ones((S, 1)))
+    k_mat = np.kron(np.ones((N, p)),
+                    np.reshape(np.linspace(0, S-1, S), (S, 1)))
+    delta__ksi_i_mu__k = delta__ksi_i_mu__k == k_mat
+    return ksi_i_mu, delta__ksi_i_mu__k

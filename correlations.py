@@ -28,25 +28,32 @@ if os.environ.get('DISPLAY', '') == '':
     mpl.use('Agg')
 
 
-def active_same_state(ksi1, ksi2):
+def active_same_state(ksi1, ksi2, normalized=True):
     """ Proportion of units active in the same state in both patterns"""
-    return np.sum((ksi1 == ksi2)*(1-(ksi2 == S)), axis=0)/N/a
+    if normalized:
+        return np.sum((ksi1 == ksi2)*(1-(ksi2 == S)), axis=0)/N/a
+    return np.sum((ksi1 == ksi2)*(1-(ksi2 == S)), axis=0)
 
 
-def active_diff_state(ksi1, ksi2):
+def active_diff_state(ksi1, ksi2, normalized=True):
     """  Proportion of units active but in different states in the two patterns
     """
-    return np.sum((1-(ksi1 == ksi2))*(1-(ksi2 == S))*(1-(ksi1 == S)),
-                  axis=0)/N/a
+    if normalized:
+        return np.sum((1-(ksi1 == ksi2))*(1-(ksi2 == S))*(1-(ksi1 == S)),
+                      axis=0)/N/a
+    return np.sum((1-(ksi1 == ksi2))*(1-(ksi2 == S))*(1-(ksi1 == S)), axis=0)
 
 
-def active_inactive(ksi1, ksi2):
+def active_inactive(ksi1, ksi2, normalized=True):
     """ Proportion of units that are active in one state and inactive in the other
     """
-    return np.sum((ksi1 == S) * (1-(ksi2 == S)), axis=0)/N/a
+    if normalized:
+        return np.sum((ksi1 == S) * (1-(ksi2 == S)), axis=0)
+    return np.sum((ksi1 == S) * (1-(ksi2 == S)), axis=0)
 
 
-def cross_correlations(ksi_i_mu):
+
+def cross_correlations(ksi_i_mu, normalized=True):
     """ C1, C2 for all pairs of patterns
 
     Parameters
@@ -65,9 +72,12 @@ def cross_correlations(ksi_i_mu):
     items = [(i, j) for i in range(p) for j in range(i+1, p)]
 
     def fun(x):
-        return (active_same_state(ksi_i_mu[:, x[0]], ksi_i_mu[:, x[1]]),
-                active_diff_state(ksi_i_mu[:, x[0]], ksi_i_mu[:, x[1]]),
-                active_inactive(ksi_i_mu[:, x[0]], ksi_i_mu[:, x[1]]))
+        return (active_same_state(ksi_i_mu[:, x[0]], ksi_i_mu[:, x[1]],
+                                  normalized),
+                active_diff_state(ksi_i_mu[:, x[0]], ksi_i_mu[:, x[1]],
+                                  normalized),
+                active_inactive(ksi_i_mu[:, x[0]], ksi_i_mu[:, x[1]],
+                                normalized))
 
     corr = map(fun, items)
     return np.array(list(corr))
