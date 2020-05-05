@@ -34,7 +34,7 @@ try:
         outsider_saved, max_m_mu_saved, max2_m_mu_saved, \
         r_i_k_plot, m_mu_plot, sig_i_k_plot, theta_i_k_plot = pickle.load(f)
 except IOError:
-    exec(open(set_name).read())
+    print('Run simulation first!')
 finally:
     f.close()
 
@@ -61,17 +61,68 @@ bins_y = np.arange(y0-shift, y1 + 1/N/a-shift, 1/N/a)
 bins_x = np.arange(x0-shift, x1 + 1/N/a-shift, 1/N/a)
 bins_z = np.arange(0, 1, 1/N/a)
 
-XX = correlations.active_diff_state(ksi_i_mu[:, retrieved_saved],
-                                    ksi_i_mu[:, outsider_saved])
-YY = correlations.active_same_state(ksi_i_mu[:, retrieved_saved],
-                                    ksi_i_mu[:, outsider_saved])
-ZZ = correlations.active_inactive(ksi_i_mu[:, retrieved_saved],
-                                  ksi_i_mu[:, outsider_saved])
+ax_order = 'xC1yC2'
+if ax_order == 'xC1yC2':
+    xx = correlations.active_same_state(ksi_i_mu[:, retrieved_saved],
+                                        ksi_i_mu[:, outsider_saved])
+    yy = correlations.active_diff_state(ksi_i_mu[:, retrieved_saved],
+                                        ksi_i_mu[:, outsider_saved])
+    zz = correlations.active_inactive(ksi_i_mu[:, retrieved_saved],
+                                      ksi_i_mu[:, outsider_saved])
+    XX = C1C2C0[:, 0]
+    YY = C1C2C0[:, 1]
+else:
+    xx = correlations.active_diff_state(ksi_i_mu[:, retrieved_saved],
+                                        ksi_i_mu[:, outsider_saved])
+    yy = correlations.active_same_state(ksi_i_mu[:, retrieved_saved],
+                                        ksi_i_mu[:, outsider_saved])
+    zz = correlations.active_inactive(ksi_i_mu[:, retrieved_saved],
+                                      ksi_i_mu[:, outsider_saved])
+    XX = C1C2C0[:, 1]
+    YY = C1C2C0[:, 0]
+plt.figure('2D plots')
+plt.suptitle(r'Correlations between transition patterns, $\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
+ax1 = plt.subplot(221)
+ax1.scatter(xx[low_cor]+shift, yy[low_cor]+shift, s=s, c='orange',
+            label=l_low_cor)
+ax1.scatter(xx[mid_low_cor]+shift, yy[mid_low_cor]-shift, s=s, c='cyan',
+            label=l_mid_low_cor)
+ax1.scatter(xx[mid_high_cor]-shift, yy[mid_high_cor]+shift, s=s, c='m',
+            label=l_mid_high_cor)
+ax1.scatter(xx[high_cor], yy[high_cor], s=s, c='g', label=l_high_cor)
+ax1.legend()
+ax1.set_ylabel('C1')
+ax1.set_xlabel('C2')
+ax1.set_xlim(x0, x1)
+ax1.set_ylim(y0, y1)
+
+ax2 = plt.subplot(222)
+plt.hist2d(xx, yy, bins=(bins_x, bins_y))
+ax2.set_xlabel('C2')
+ax2.set_xlim(x0, x1)
+ax2.set_ylim(y0, y1)
+plt.colorbar()
+
+ax3 = plt.subplot(223)
+plt.scatter(C1C2C0[:, 1], C1C2C0[:, 0], s=s)
+ax3.set_xlim(x0, x1)
+ax3.set_ylim(y0, y1)
+ax3.annotate('Correlations between all patterns', xy=(0, 0.5))
+
+ax4 = plt.subplot(224)
+plt.hist2d(C1C2C0[:, 1], C1C2C0[:, 0], bins=(bins_x, bins_y))
+plt.colorbar()
+ax4.set_xlim(x0, x1)
+ax4.set_ylim(y0, y1)
+
+plt.tight_layout()
+plt.show()
 
 plt.ion()
+plt.close('all')
 
 plt.figure(2)
-plt.plot(tS[:, None], m_mu_plot)
+plt.plot(tSnap[:, None], m_mu_plot)
 plt.xlabel('Time')
 plt.ylabel('Overlap')
 plt.title(r'$\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
@@ -84,23 +135,24 @@ plt.ylabel('Density')
 plt.title(r'$\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
 plt.savefig('hist_kwang_il_gA'+str(int(10*g_A))+'.png')
 
+plt.figure('2D plots')
+plt.suptitle(r'Correlations between transition patterns, $\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
 ax1 = plt.subplot(221)
-ax1.scatter(XX[low_cor]+shift, YY[low_cor]+shift, s=s, c='orange',
+ax1.scatter(xx[low_cor]+shift, yy[low_cor]+shift, s=s, c='orange',
             label=l_low_cor)
-ax1.scatter(XX[mid_low_cor]+shift, YY[mid_low_cor]-shift, s=s, c='cyan',
+ax1.scatter(xx[mid_low_cor]+shift, yy[mid_low_cor]-shift, s=s, c='cyan',
             label=l_mid_low_cor)
-ax1.scatter(XX[mid_high_cor]-shift, YY[mid_high_cor]+shift, s=s, c='m',
+ax1.scatter(xx[mid_high_cor]-shift, yy[mid_high_cor]+shift, s=s, c='m',
             label=l_mid_high_cor)
-ax1.scatter(XX[high_cor], YY[high_cor], s=s, c='g', label=l_high_cor)
+ax1.scatter(xx[high_cor], yy[high_cor], s=s, c='g', label=l_high_cor)
 ax1.legend()
 ax1.set_ylabel('C1')
 ax1.set_xlabel('C2')
 ax1.set_xlim(x0, x1)
 ax1.set_ylim(y0, y1)
-ax1.set_title('Correlations between transition patterns')
 
 ax2 = plt.subplot(222)
-plt.hist2d(XX, YY, bins=(bins_x, bins_y))
+plt.hist2d(xx, yy, bins=(bins_x, bins_y))
 ax2.set_xlabel('C2')
 ax2.set_xlim(x0, x1)
 ax2.set_ylim(y0, y1)
@@ -110,7 +162,7 @@ ax3 = plt.subplot(223)
 plt.scatter(C1C2C0[:, 1], C1C2C0[:, 0], s=s)
 ax3.set_xlim(x0, x1)
 ax3.set_ylim(y0, y1)
-ax3.set_title('Correlations between all patterns')
+ax3.annotate('Correlations between all patterns', xy=(0, 0.5))
 
 ax4 = plt.subplot(224)
 plt.hist2d(C1C2C0[:, 1], C1C2C0[:, 0], bins=(bins_x, bins_y))

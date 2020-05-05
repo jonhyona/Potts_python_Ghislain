@@ -218,3 +218,19 @@ def get_2_patterns(C1, C2):
     delta__ksi_i_mu__k = delta__ksi_i_mu__k == k_mat
 
     return ksi_i_mu, delta__ksi_i_mu__k
+
+
+def get_from_file(file_name):
+    f = open(file_name, "r")
+    contents = f.readlines()
+    ksi_i_mu = np.zeros((N, p), dtype=int)
+    mu = 0
+    ii = 0
+    for s1 in contents:
+        print(ii, mu)
+        print(s1)
+        ksi_i_mu[ii, mu] = s1
+        ii += 1
+        if ii % N == 0:
+            ii = 0
+            mu += 1

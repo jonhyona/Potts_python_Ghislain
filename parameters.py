@@ -43,7 +43,7 @@ tau_3_A = 5
 # tau_2 = 200
 # tau_3_A = 10
 tau_3_B = 1e5
-g_A = 0
+g_A = 0.5
 beta = 11
 
 # Cue
