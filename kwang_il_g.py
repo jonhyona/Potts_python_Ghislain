@@ -25,7 +25,7 @@ if os.environ.get('DISPLAY', '') == '':
     mpl.use('Agg')
 
 try:
-    f = open(set_name, 'rb')
+    f = open('data_analysis/'+set_name, 'rb')
     dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo, cm, a, U, \
         w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0, g, \
         random_seed, p_0, n_p, nSnap, \
@@ -95,18 +95,18 @@ plt.figure(2)
 plt.plot(tSnap[:, None], m_mu_plot)
 plt.xlabel('Time')
 plt.ylabel('Overlap')
-plt.title(r'$\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
+plt.title(r'w=' +str(w) + ', $\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
 plt.savefig(set_name[:-4] + '_time_evolution.png')
 
 plt.figure(1)
 sns.distplot(lamb)
 plt.xlabel(r'$\lambda$')
 plt.ylabel('Density')
-plt.title(r'$\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
+plt.title(r'w=' +str(w) + ', $\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
 plt.savefig(set_name[:-4] + '_crossover_histogram.png')
 
 plt.figure('2D plots')
-plt.suptitle(r'Correlations between transition patterns, $\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
+plt.suptitle(r'Correlations between transition patterns, w=' +str(w) + ', $\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
 ax1 = plt.subplot(221)
 ax1.scatter(xx[low_cor]+shift, yy[low_cor]+shift, s=s, c='orange',
             label=l_low_cor)
@@ -120,22 +120,30 @@ ax1.set_ylabel(label_y)
 ax1.set_xlabel(label_x)
 ax1.set_xlim(x0, x1)
 ax1.set_ylim(y0, y1)
+ax1.hlines(a*(S-1)/S, x0, x1, colors='k')
+ax1.vlines(a/S, y0, y1, colors='k')
 
 ax2 = plt.subplot(222)
 plt.hist2d(xx, yy, bins=(bins_x, bins_y))
 ax2.set_xlabel(label_x)
 ax2.set_xlim(x0, x1)
 ax2.set_ylim(y0, y1)
+ax2.hlines(a*(S-1)/S, x0, x1, colors='w')
+ax2.vlines(a/S, y0, y1, colors='w')
 plt.colorbar()
 
 ax3 = plt.subplot(223)
-plt.scatter(XX, YY, s=s)
+ax3.scatter(XX, YY, s=s)
+ax3.hlines(a*(S-1)/S, x0, x1, colors='k')
+ax3.vlines(a/S, y0, y1, colors='k')
 ax3.set_xlim(x0, x1)
 ax3.set_ylim(y0, y1)
 
 ax4 = plt.subplot(224)
 plt.hist2d(XX, YY, bins=(bins_x, bins_y))
 plt.colorbar()
+ax4.hlines(a*(S-1)/S, x0, x1, colors='w')
+ax4.vlines(a/S, y0, y1, colors='w')
 ax4.set_xlim(x0, x1)
 ax4.set_ylim(y0, y1)
 

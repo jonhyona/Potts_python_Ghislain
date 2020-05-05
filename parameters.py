@@ -15,16 +15,16 @@ nSnap = min(int(tSim/dt), 1000)
 # Network
 
 # Potts units
-N = 300
-S = 10
-p = 50
+N = 1000
+S = 7
+p = 200
 # Pattern generation
-num_fact = 100
+num_fact = 200
 p_fact = 40
 dzeta = 0.0000002
 a_pf = 0.004
 eps = 0.000001
-f_russo = 50/N
+f_russo = 0.1
 
 # Building network
 cm = 150
@@ -43,7 +43,7 @@ tau_3_A = 5
 # tau_2 = 200
 # tau_3_A = 10
 tau_3_B = 1e5
-g_A = 0.5
+g_A = 0.
 beta = 11
 
 # Cue
