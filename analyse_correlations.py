@@ -13,12 +13,14 @@ import numpy.random as rd
 from tqdm import tqdm
 
 # Local modules
-from parameters import get_parameters, get_f_russo
 import patterns
 import correlations
 import initialisation
 import iteration
 from scipy.spatial import ConvexHull
+from parameters import dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, \
+    f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, \
+    t_0, g, random_seed, set_name, p_0, n_p, nSnap
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -28,10 +30,7 @@ if os.environ.get('DISPLAY', '') == '':
 
 plt.ion()
 plt.close('all')
-dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, U, T, w, \
-    tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, cue_ind, \
-    random_seed = get_parameters()
-f_russo = get_f_russo()
+
 
 ksi_i_mu, delta__ksi_i_mu__k \
     = patterns.get_from_file('pattern_generation_saved')
@@ -45,32 +44,37 @@ c_ticks_Ale = np.arange(c_min, c_max, max(1, int((c_max-c_min)/15)))
 plt.figure(1)
 plt.hist(C1C2C0[:, 0], bins=c_bins_Ale,  edgecolor='black', density=True)
 plt.xticks(c_ticks_Ale)
-plt.title('Ale\'s C algorithm')
+plt.title(r"Ale's C algorithm, $a_{pf}=0.75$, $\zeta=0.02$")
 
-n_seeds = 10
-n_pairs = len(data)
-data = np.zeros(n_seeds*n_pairs)
+# n_seeds = 10
+# n_pairs = len(data)
+# data = np.zeros(n_seeds*n_pairs)
 
-for ind_seed in range(n_seeds):
-    rd.seed(ind_seed)
-    ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay()
-    C1C2C0 = correlations.cross_correlations(ksi_i_mu, normalized=False)
-    data[ind_seed*n_pairs: (ind_seed+1)*n_pairs] = C1C2C0[:, 0]
-c_min = np.min(data)
-c_max = np.max(data)
-c_bins = np.arange(c_min, c_max, 1)
-c_ticks = np.arange(c_min, c_max, max(1, int((c_max-c_min)/15)))
+# for ind_seed in range(n_seeds):
+#     rd.seed(ind_seed)
+#     ksi_i_mu, delta__ksi_i_mu__k = patterns.get_vijay()
+#     C1C2C0 = correlations.cross_correlations(ksi_i_mu, normalized=False)
+#     data[ind_seed*n_pairs: (ind_seed+1)*n_pairs] = C1C2C0[:, 0]
+# c_min = np.min(data)
+# c_max = np.max(data)
+# c_bins = np.arange(c_min, c_max, 1, dtype=int)
+# c_ticks = np.arange(c_min, c_max, max(1, int((c_max-c_min)/15)), dtype=int)
 
-plt.figure(2)
-plt.hist(C1C2C0[:, 0], bins=c_bins,  edgecolor='black', density=True)
-plt.xticks(c_ticks)
-plt.title('Ghislain\'s Python algorithm')
+# plt.figure(2)
+# plt.hist(C1C2C0[:, 0], bins=c_bins,  edgecolor='black', density=True)
+# plt.xticks(c_ticks)
+# plt.title('Ghislain\'s Python algorithm')
 
-plt.figure(3)
-plt.hist(C1C2C0[:, 0], bins=c_bins_Ale,  edgecolor='black', density=True)
-plt.xticks(c_ticks_Ale)
-plt.title('Ghislain\'s Python algorithm without highly correlated')
+# plt.figure(3)
+# plt.hist(C1C2C0[:, 0], bins=c_bins_Ale,  edgecolor='black', density=True)
+# plt.xticks(c_ticks_Ale)
+# plt.title('Ghislain\'s Python algorithm without highly correlated')
 
+# # plt.figure(4)
+# plt.hist([0], bins=c_bins_Ale, label='[0]')
+# plt.hist([1], bins=c_bins_Ale, label='[1]')
+# plt.legend()
+# plt.xticks(c_ticks_Ale)
 
 
 # rd.seed(random_seed)

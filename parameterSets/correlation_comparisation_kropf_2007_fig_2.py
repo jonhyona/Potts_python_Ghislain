@@ -15,16 +15,16 @@ nSnap = min(int(tSim/dt), 1000)
 # Network
 
 # Potts units
-N = 1000
-S = 7
-p = 200
+N = 300
+S = 10
+p = 50
 # Pattern generation
-num_fact = 200
+num_fact = 100
 p_fact = 40
-dzeta = 0.0000002
+dzeta = 0.02
 a_pf = 0.004
 eps = 0.000001
-f_russo = 0.1
+f_russo = 50/N
 
 # Building network
 cm = 150
@@ -43,8 +43,9 @@ tau_3_A = 5
 # tau_2 = 200
 # tau_3_A = 10
 tau_3_B = 1e5
-g_A = 0.0
+g_A = 0.5
 beta = 11
+T = 1/beta
 
 # Cue
 cue_ind = 1
@@ -59,7 +60,6 @@ random_seed = 2021
 set_name = str(hash((dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps,
                      f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A,
                      beta, tau, t_0, g, random_seed, p_0, n_p, nSnap))) + '.pkl'
-
 
 def get_parameters():
     return dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, \
