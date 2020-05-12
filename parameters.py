@@ -5,11 +5,11 @@ Different interesting parameters set used must be stored in
 'sample_paramters.txt' with explanation of where they come
 from and their behavior
 """
-
+import platform
 # Integration
 # Integration
 dt = 1.
-tSim = 10000
+tSim = 1e5
 nSnap = min(int(tSim/dt), 1000)
 
 # Network
@@ -53,6 +53,16 @@ t_0 = 50
 g = 10.
 p_0 = 0
 n_p = p
+
+if platform.node() == 'dromon':
+    g_A = 0
+    print('Autodected dromon, set g_A to 0')
+if platform.node() == 'brick':
+    print('Autodected dromon, set g_A to 0.5')
+    g_A = 0.5
+if platform.node() == 'bireme':
+    print('Autodected bireme, set g_A to 1.')
+    g_A = 1.
 
 random_seed = 2021
 
