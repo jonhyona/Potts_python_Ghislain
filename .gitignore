@@ -9,3 +9,5 @@ scan_corr/
 .#*
 *~
 *.png
+nodefile*
+runsim_ssh.sh
