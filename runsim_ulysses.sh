@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --partition=wide2
-#SBATCH --nodes=16
-#SBATCH --ntasks-per-node=16
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=1
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ghislain.delabbey@sissa.it
