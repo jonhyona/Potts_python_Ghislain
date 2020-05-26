@@ -12,4 +12,3 @@ scan_corr/
 *.png
 nodefile*
 runsimssh.sh
-runsim_ulysses.sh
