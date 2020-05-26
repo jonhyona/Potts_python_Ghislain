@@ -21,7 +21,6 @@ import numpy.random as rd
 import numpy as np
 from parameters import N, S, p, num_fact, p_fact, dzeta, a_pf, eps, a, \
     f_russo, random_seed
-import csv
 import pandas as pd
 rd.seed(random_seed + 1)
 

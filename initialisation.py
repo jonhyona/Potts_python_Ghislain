@@ -10,7 +10,6 @@ network():
 import scipy.sparse as spsp
 import numpy as np
 import numpy.random as rd
-from scipy.optimize import root
 import iteration
 from parameters import N, S, p, a, U, beta, random_seed, cm, g_A, t_0
 
@@ -64,7 +63,7 @@ def hebbian_tensor(delta__ksi_i_mu__k):
     return spsp.bsr_matrix(J_i_j_k_l, blocksize=(S, S))
 
 
-def network(J_i_j_k_l, delta__ksi_i_mu__k):
+def network(J_i_j_k_l, delta__ksi_i_mu__k, g_A=g_A):
     """
     Initializing the network in stationnary-rest-state
 

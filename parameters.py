@@ -5,76 +5,51 @@ Different interesting parameters set used must be stored in
 'sample_paramters.txt' with explanation of where they come
 from and their behavior
 """
-import platform
 # Integration
-# Integration
-dt = 1.
-tSim = 1e5
-nSnap = min(int(tSim/dt), 1000)
+dt = 1.                         # Time-step
+tSim = 1e5                      # Number of runs
+nSnap = min(int(tSim/dt), 2)    # Resampling to plot time-evolution
 
 # Network
 
 # Potts units
-N = 1000
-S = 7
-p = 200
+N = 1000                        # Number of units in the network
+S = 7                           # Number of states
+p = 200                         # Number of memorized patterns
+
 # Pattern generation
-num_fact = 200
-p_fact = 40
-dzeta = 0.0000002
-a_pf = 0.004
-eps = 0.000001
-f_russo = 0.1
+num_fact = 200                  # Number of factors generated
+p_fact = 40                     # Number of children per factor
+dzeta = 0.0000002               # Exponential decay of pattern importance
+a_pf = 0.004                    # Input sparsity
+eps = 0.000001                  # Safety net
+f_russo = 0.1                   # Pattern sparsity in Russo2008 algorithm
 
 # Building network
-cm = 150
-a = 0.25
+cm = 150                        # Connectivity
+a = 0.25                        # Pattern sparsity
 
 # Network dynamics
-U = 0.1
-w = 1.3
-# b1 = 0.1
-# b2 = 0.005
-# b3 = 1
-tau_1 = 10
-tau_2 = 200
-tau_3_A = 5
-# tau_1 = 20
-# tau_2 = 200
-# tau_3_A = 10
-tau_3_B = 1e5
-g_A = 0.0
+U = 0.1                         # Threshold
+w = 1.4                         # Attractor deepener
+tau_1 = 10                      # Activity time-scale
+tau_2 = 200                     # Threshold time-scale
+tau_3_A = 5                     # Unit threshold fast
+tau_3_B = 1e5                   # Unit threshold slow
+g_A = 1.                        # Weight between slow-high adapation
 beta = 11
 
 # Cue
-cue_ind = 1
-tau = 1
-t_0 = 50
-g = 10.
-p_0 = 0
-n_p = p
+tau = 10                        # Typical duration of cue
+t_0 = 50                        # Time to cue
+g = 5.                          # Cue strengh
 
-if platform.node() == 'dromon':
-    g_A = 0
-    print('Autodected dromon, set g_A to 0')
-if platform.node() == 'brick':
-    print('Autodected dromon, set g_A to 0.5')
-    g_A = 0.5
-if platform.node() == 'bireme':
-    print('Autodected bireme, set g_A to 1.')
-    g_A = 1.
+# Parameters on the cues to use. Useless if run.py is used with the cue
+# as a parameter
+cue_ind = 1                     # Default pattern to cue
+p_0 = 0                         # First cue, useless if cue as a parameter
+n_p = 1                         # Number of cues
 
 random_seed = 2021
-
-set_name = str(hash((dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps,
-                     f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A,
-                     beta, tau, t_0, g, random_seed, p_0, n_p, nSnap))) + '.pkl'
-
-
-def get_parameters():
-    return dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, cm, a, \
-        U, T, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, g, t_0, tau, \
-        cue_ind, random_seed
-
-def get_f_russo():
-    return f_russo
+# The model changed a bit after Russo2008 see h funtion in iteration.py
+russo2008_mode = False

@@ -58,7 +58,7 @@ if platform.node() == 'dromon':
     g_A = 0
     print('Autodected dromon, set g_A to 0')
 if platform.node() == 'brick':
-    print('Autodected dromon, set g_A to 0.5')
+    print('Autodected brick, set g_A to 0.5')
     g_A = 0.5
 if platform.node() == 'bireme':
     print('Autodected bireme, set g_A to 1.')
