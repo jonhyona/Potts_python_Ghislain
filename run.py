@@ -6,7 +6,7 @@ will be taken from parameters.py
 
 import os
 
-# When it is more efficient to use only one core per cue, but launch
+# It is more efficient to use only one core per cue, but launch
 # several cues in parallel. So the number of threads numpy can use is
 # set to 1
 os.environ["OMP_NUM_THREADS"] = "1" # export OMP_NUM_THREADS=4
