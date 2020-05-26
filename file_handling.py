@@ -68,7 +68,7 @@ def save_network(ksi_i_mu, delta__ksi_i_mu__k, J_i_j_k_l, pkl_name, param):
 def load_network(pkl_name=pkl_name):
     """ Loads the network"""
     if not network_exists(pkl_name):
-        raise 'Network not constructed : run create_pkl_file.py cue g_A tSim'
+        print('Network not constructed : run create_pkl_file.py cue g_A tSim')
     with open(data_path+'network_'+pkl_name, 'rb') as f:
         return pickle.load(f)
 
