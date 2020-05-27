@@ -21,8 +21,8 @@ def mutual_information(var1_realisations, var2_realisations, p):
     return ent_cut, ent_shifted, ent_joint
 
 
-simulations = ['3451823122763528434', '9216430645797763314',
-               '3438864452894381743']
+simulations = ['4406010109634386043', '8276126441040930693',
+               '2037770147520999148']
 
 ryom_data = ['seq_w1.4_gA0.0', 'seq_w1.4_gA0.5', 'seq_w1.4_gA1.0']
 color_s = ['blue', 'orange', 'green']
@@ -42,7 +42,7 @@ ymax = 2**3
 min_t = min(tau_1, tau_2, tau_3_A, tau_3_B)
 
 
-def get_mi(retrieved_saved):
+def get_mi(retrieved_saved, number_limiter):
     mi_saved = []
     m_saved = []
     ent_cut = []
@@ -58,10 +58,11 @@ def get_mi(retrieved_saved):
         for cue_ind in range(p):
             sequence = [cue_ind]
             sequence += retrieved_saved[cue_ind]
+            end = len(sequence)
             ind_cut_0 = 3
-            ind_cut_1 = len(sequence) - m_max
+            ind_cut_1 = end - m_max
             ind_shifted_0 = m+3
-            ind_shifted_1 = len(sequence) - (m_max-m)
+            ind_shifted_1 = end - (m_max-m)
             seq_cut += sequence[ind_cut_0: ind_cut_1]
             seq_shifted += sequence[ind_shifted_0: ind_shifted_1]
         if seq_cut == []:
@@ -113,8 +114,8 @@ for ind_key in range(len(simulations)):
     retrieved_saved = file_handling.load_retrieved(simulation_key+'.txt')
     ryom_retrieved = file_handling.load_ryom_retrieved(ryom_name)
 
-    m_saved, mi_ryom, control_ryom, shuffled_ryom = get_mi(ryom_retrieved)
-    m_saved, mi_saved, control, shuffled = get_mi(retrieved_saved)
+    m_saved, mi_ryom, control_ryom, shuffled_ryom = get_mi(ryom_retrieved, retrieved_saved)
+    m_saved, mi_saved, control, shuffled = get_mi(retrieved_saved, ryom_retrieved)
 
     plt.subplot(221)
     plt.title('Gsln and Ryom data with shuffled control')

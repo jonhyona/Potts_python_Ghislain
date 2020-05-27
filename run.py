@@ -136,7 +136,7 @@ for iT in tqdm(range(nT)):
             tmp = [tS[iT], max_m_mu, retrieved_pattern,
                    previously_retrieved, outsider, max_m_mu, max2_m_mu]
             waiting_validation = True
-            previous_idle = False
+            previous_idle = True
             new_reached_threshold = False
         # Transitions are validated only if previous patterns dies
         if waiting_validation and not previous_idle \
