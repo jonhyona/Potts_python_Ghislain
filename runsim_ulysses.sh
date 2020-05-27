@@ -1,23 +1,18 @@
 #! /bin/bash
-#SBATCH --partition=wide2
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
+#SBATCH --partition=regular2
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=8
 #SBATCH --cpus-per-task=1
 #SBATCH --mail-type=END
+#SBATCH --mem=10000
 #SBATCH --mail-user=ghislain.delabbey@sissa.it
 
-module load python
-rm data_analysis/*.pkl
-for g in 0. 0.5 1.
-do
-    python create_pkl_file.py 0 $g 100 &
-done
+rm *.pkl
+rm *.txt
+python create_pkl_file.py 0 0. 100 &
 wait
-for g in 0. 0.5 1.
+for cue in {0..31}
 do
-    for cue in {0..199}
-    do
-	python -u run.py $cue 1. 100 &
-    done
+    python run.py $cue 0. 100 &
 done
 wait

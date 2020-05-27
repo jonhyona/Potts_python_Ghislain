@@ -13,8 +13,6 @@ import numpy.random as rd
 import iteration
 from parameters import N, S, p, a, U, beta, random_seed, cm, g_A, t_0
 
-rd.seed(random_seed+2)
-
 
 def hebbian_tensor(delta__ksi_i_mu__k):
     """
@@ -36,6 +34,7 @@ def hebbian_tensor(delta__ksi_i_mu__k):
     the sparse module from scipy, one has to have less than 2 dimensions. We
     use the convention that unit i in state k is indexed by ii = i*S + k.
     """
+    rd.seed(random_seed+2)
 
     # Building the connectivity matrix
     mask = spsp.lil_matrix((N, N))  # connectivity matrix
@@ -123,17 +122,6 @@ def network(J_i_j_k_l, delta__ksi_i_mu__k, g_A=g_A):
     h_i_k = np.zeros(theta_i_k.shape)
 
     # # Thresholds such that time-derivative are zero
-    # def fun_r_i_S_A(x): g_A*S/(S+np.exp(beta*(x+U))) - x
-    # r_i_S_A = (root(fun_r_i_S_A, 0).x)[0]*np.ones(len(r_i_S_A))
-
-    # def fun_r_i_S_B(x): (1-g_A)*S/(S+np.exp(beta*(x+U))) - x
-    # r_i_S_B = (root(fun_r_i_S_B, 0).x)[0]*np.ones(len(r_i_S_B))
-
-    # theta_i_k = sig_i_k[active]
-    # r_i_k[active] = r_i_k_act
-    # r_i_k[inactive] = r_i_S_A+r_i_S_B
-
-    # s[i][k]=(-2*beta-2*exp(beta*U)-2*S+sqrt(pow(2*beta+2*exp(beta*U)+2*S,2)+8*(-beta*beta-2*beta*S+2*beta*S*exp(beta*U))))/(2*(-beta*beta-2*beta*S+2*beta*S*exp(beta*U))
     sig_value = ((-2*beta-2*np.exp(beta*U)-2*S +
                   np.sqrt((2*beta+2*np.exp(beta*U)+2*S)**2
                           + 8*(-beta*beta-2*beta*S +

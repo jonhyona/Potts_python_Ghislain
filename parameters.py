@@ -6,7 +6,7 @@ Different interesting parameters set used must be stored in
 from and their behavior
 """
 # Integration
-dt = 1.                         # Time-step
+dt = .2                         # Time-step
 tSim = 1e5                      # Number of runs
 nSnap = min(int(tSim/dt), 2)    # Resampling to plot time-evolution
 
@@ -41,7 +41,7 @@ beta = 11
 
 # Cue
 tau = 10                        # Typical duration of cue
-t_0 = 50                        # Time to cue
+t_0 = 1                        # Time to cue
 g = 5.                          # Cue strengh
 
 # Parameters on the cues to use. Useless if run.py is used with the cue

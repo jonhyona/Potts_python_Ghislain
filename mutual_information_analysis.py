@@ -21,12 +21,15 @@ def mutual_information(var1_realisations, var2_realisations, p):
     return ent_cut, ent_shifted, ent_joint
 
 
-simulations = ['134332572273764016',
-               '5630274950760470864',
-               '2756919133842347063']
+simulations = ['3451823122763528434', '9216430645797763314',
+               '3438864452894381743']
+
 ryom_data = ['seq_w1.4_gA0.0', 'seq_w1.4_gA0.5', 'seq_w1.4_gA1.0']
 color_s = ['blue', 'orange', 'green']
 color_s_ryom = ['navy', 'peru', 'darkolivegreen']
+
+ymin = 2**(-2)
+ymax = 2**3
 
 
 (dt, tSim, N, S, p, num_fact, p_fact,
@@ -120,6 +123,7 @@ for ind_key in range(len(simulations)):
     plt.plot(m_saved, mi_ryom, '-o',color=color_s_ryom[ind_key], label='Ryom, g_A='+str(g_A))
     plt.plot(m_saved, shuffled_ryom, ':', color=color_s_ryom[ind_key])
     plt.yscale('log', basey=2)
+    plt.ylim([ymin, ymax])
     plt.legend()
 
     plt.subplot(222)
@@ -128,6 +132,7 @@ for ind_key in range(len(simulations)):
     plt.plot(m_saved, shuffled, ':', color=color_s[ind_key], label='Shuffled')
     plt.hlines(1/2/event_counter(retrieved_saved)/np.log(2)*(p-1)**2, 0, np.max(m_saved), linestyle='dashed', colors=color_s[ind_key], label='First order Pan+96a')
     plt.yscale('log', basey=2)
+    plt.ylim([ymin, ymax])
     plt.legend()
 
 
@@ -137,6 +142,7 @@ for ind_key in range(len(simulations)):
     plt.plot(m_saved, shuffled_ryom, ':', color=color_s_ryom[ind_key], label='Shuffled')
     plt.hlines(1/2/event_counter(ryom_retrieved)/np.log(2)*(p-1)**2, 0, np.max(m_saved), linestyle='dashed', colors=color_s_ryom[ind_key], label='First order Pan+96a')
     plt.yscale('log', basey=2)
+    plt.ylim([ymin, ymax])
     plt.legend()
 
 plt.subplot(224)
@@ -178,6 +184,7 @@ def test_shuffle_error(N, p):
         plt.vlines(event_counter(retrieved_saved), 0, 2**3, colors=color_s[ind_key])
         plt.vlines(event_counter(ryom_retrieved), 0, 2**3, colors=color_s_ryom[ind_key])
 
+    plt.ylim([ymin, ymax])
     plt.legend()
     plt.show()
 

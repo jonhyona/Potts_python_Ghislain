@@ -129,20 +129,6 @@ def load_previously_retrieved(txt_name):
     return load_full_dynamics(4, int, txt_name)
 
 
-def load_dynamics_item(item_index, pkl_name):
-    item = []
-    with open(data_path+'dynamics_'+pkl_name, 'rb') as f:
-        while True:
-            try:
-                item.append(pickle.load(f)[item_index])
-            except EOFError:
-                break
-            except pickle.UnpicklingError:
-                # print(item[-1])
-                break
-    return item
-
-
 def load_ryom_retrieved(file_name):
     res = []
     tmp = np.loadtxt(data_path+file_name, comments="#", delimiter="\n",

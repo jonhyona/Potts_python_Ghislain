@@ -22,7 +22,6 @@ import numpy as np
 from parameters import N, S, p, num_fact, p_fact, dzeta, a_pf, eps, a, \
     f_russo, random_seed
 import pandas as pd
-rd.seed(random_seed + 1)
 
 
 def get_uncorrelated():
@@ -36,6 +35,10 @@ def get_uncorrelated():
         Index (i*S+k, mu) is True if unit i of pattern mu is in state k
     """
 
+    rd.seed(random_seed + 1)
+
+    # Patterns are generated in the rest state. Then, for each
+    # pattern, Na units are attributed a random state
     ksi_i_mu = S*np.ones((N, p), dtype=int)
     for mu in range(p):
         deck = np.arange(N)
@@ -72,6 +75,7 @@ def get_vezha():
     """
 
     rd.seed(random_seed + 1)
+
     ind_units = np.linspace(0, N-1, N, dtype=int)
     ind_children = np.zeros((num_fact, p_fact), dtype=int)
 
@@ -141,6 +145,9 @@ def get_vijay(f_russo=f_russo):
     [2] 'Treves, A. (2005). Frontal latching networks: a possible neural basis
     for infinite recursion. Cognitive neuropsychology, 22(3-4), 276-291.'
     """
+
+    rd.seed(random_seed + 1)
+
     factors = np.zeros((N, num_fact))  # factors or parents
     deck = np.linspace(0, N-1, N, dtype=int)  # random permutation
     for n in range(num_fact):
@@ -196,6 +203,9 @@ def get_2_patterns(C1, C2):
     delta__ksi_i_mu__k -- 2D array of bools
         Index (i*S+k, mu) is True if unit i of pattern mu is in state k
     """
+    rd.seed(random_seed + 1)
+
+
     if p != 2:
         print('Warning : p should be equal to 2')
     if S < 2:
