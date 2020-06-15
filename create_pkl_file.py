@@ -9,6 +9,8 @@ from parameters import dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, \
 import initialisation
 import file_handling
 import patterns
+import errno
+import os
 
 # The pattern to cue, g_A and tSim can be set as parameters. Elsewise,
 # they will be taken from parameters.py. Not that this is just to have
@@ -22,6 +24,8 @@ if len(sys.argv) >= 3:
     g_A = float(sys.argv[2])
 if len(sys.argv) >= 4:
     tSim = float(sys.argv[3])
+if len(sys.argv) >= 5:
+    random_seed = int(sys.arv[4])
 
 print(cue, g_A, tSim)
 
@@ -34,13 +38,19 @@ param = (dt, tSim, N, S, p, num_fact, p_fact,
          beta, tau, t_0, g, random_seed, p_0, n_p, nSnap,
          russo2008_mode)
 
-set_name = file_handling.get_pkl_name(param)
+key = file_handling.get_key(param)
 
-if not file_handling.network_exists(set_name):
-    ksi_i_mu, delta__ksi_i_mu__k = patterns.get_uncorrelated()
-    J_i_j_k_l = initialisation.hebbian_tensor(delta__ksi_i_mu__k)
+if not os.path.exists('data_analysis/'+key):
+    try:
+        os.makedirs('data_analysis/'+key)
+    except OSError as exc:      # Guard against race condition
+        if exc.errno != errno.EEXIST:
+            raise
 
-    file_handling.save_parameters_pkl(param, set_name)
-    file_handling.save_network(ksi_i_mu, delta__ksi_i_mu__k, J_i_j_k_l,
-                               set_name,
-                               param)
+ksi_i_mu, delta__ksi_i_mu__k = patterns.get_uncorrelated(random_seed)
+J_i_j_k_l, C_i_j = initialisation.hebbian_tensor(delta__ksi_i_mu__k,
+                                                 random_seed)
+
+file_handling.save_parameters_pkl(param, key)
+file_handling.save_network(ksi_i_mu, delta__ksi_i_mu__k, J_i_j_k_l,
+                           C_i_j, key)

@@ -4,52 +4,36 @@ import file_handling
 import numpy as np
 import numpy.random as rd
 
-dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo, cm, a, U, \
-    w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0, g, \
-    random_seed, p_0, n_p, nSnap, \
-    tS, tSnap, russo2008_mode, \
-    J_i_j_k_l, ksi_i_mu, delta__ksi_i_mu__k, \
-    transition_time, lamb, retrieved_saved, previously_retrieved_saved, \
-    outsider_saved, max_m_mu_saved, max2_m_mu_saved, just_next_saved, \
-    r_i_k_plot, m_mu_plot, sig_i_k_plot, theta_i_k_plot\
-    = file_handling.load_data()
+plt.ion()
+simulations = ['4406010109634386043', '8276126441040930693',
+               '2037770147520999148']
 
-g_A_s = [0., 0.5, 1.]
+ryom_data = ['seq_w1.4_gA0.0', 'seq_w1.4_gA0.5', 'seq_w1.4_gA1.0']
 color_s = ['blue', 'orange', 'green']
+color_s_ryom = ['navy', 'peru', 'darkolivegreen']
 
-for ind_g_A in range(len(g_A_s)):
-    g_A = g_A_s[ind_g_A]
-    set_name = file_handling.get_set_name(dt, tSim, N, S, p, num_fact, p_fact,
-                                          dzeta, a_pf, eps,
-                                          f_russo, cm, a, U, w, tau_1, tau_2,
-                                          tau_3_A, tau_3_B, g_A,
-                                          beta, tau, t_0, g, random_seed, p_0,
-                                          n_p, nSnap, russo2008_mode)
+def event_counter(retrieved):
+    res = 0
+    for cue_ind in range(p):
+        res += len(retrieved[cue_ind])
+    return res
 
-    dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo, cm, a, U, \
-        w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0, g, \
-        random_seed, p_0, n_p, nSnap, \
-        tS, tSnap, russo2008_mode, \
-        J_i_j_k_l, ksi_i_mu, delta__ksi_i_mu__k, \
-        transition_time, lamb, retrieved_saved, previously_retrieved_saved, \
-        outsider_saved, max_m_mu_saved, max2_m_mu_saved, just_next_saved, \
-        r_i_k_plot, m_mu_plot, sig_i_k_plot, theta_i_k_plot\
-        = file_handling.load_data(set_name)
 
-    retrieved_saved = np.array(retrieved_saved)
-    previously_retrieved_saved = np.array(previously_retrieved_saved)
-    random_patterns = rd.randint(0, p, len(lamb))
-    cue_number = 0
-    previous_t = -np.inf
-    new_cue_ind = [0]
-    for it in range(len(transition_time)):
-        tt = transition_time[it]
-        if tt < previous_t:
-            cue_number += 1
-            new_cue_ind.append(it)
-        previous_t = tt
-    # print(cue_number)
-    new_cue_ind.append(len(lamb)+1)
+for ind_key in range(len(simulations)):
+    print('ind_key = %d' % ind_key)
+    simulation_key = simulations[ind_key]
+    ryom_name = ryom_data[ind_key]
+    (dt, tSim, N, S, p, num_fact, p_fact,
+     dzeta, a_pf,
+     eps,
+     f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A,
+     tau_3_B, g_A,
+     beta, tau, t_0, g, random_seed, p_0, n_p, nSnap,
+     russo2008_mode) = file_handling.load_parameters(simulation_key+'.pkl')
+
+    retrieved_saved = file_handling.load_retrieved(simulation_key+'.txt')
+    # retrieved_saved = file_handling.load_ryom_retrieved(ryom_name)
+    cue_number = len(retrieved_saved)
 
     max_cycle = 7
     cycle_count = {}
@@ -57,10 +41,14 @@ for ind_g_A in range(len(g_A_s)):
     max_count = 0
     for size_cycle in range(1, max_cycle+1):
         for cue_ind in range(cue_number):
-            (trans_0, trans_1) = (new_cue_ind[cue_ind], new_cue_ind[cue_ind+1])
-            for ind_trans in range(trans_0, min(trans_1, len(lamb))-size_cycle+1):
-                cycle = [previously_retrieved_saved[ind_trans]] \
-                    + retrieved_saved[ind_trans:ind_trans+size_cycle-1].tolist()
+            sequence = []
+            if cue_ind != retrieved_saved[cue_ind][0]:
+                sequence.append(cue_ind)
+            sequence += retrieved_saved[cue_ind]
+            random_patterns = rd.randint(0, p, len(sequence))
+
+            for ind_trans in range(len(sequence)-size_cycle):
+                cycle = sequence[ind_trans: ind_trans+size_cycle]
                 cycle = tuple(cycle)
                 if cycle in cycle_count:
                     cycle_count[cycle] += 1
@@ -95,23 +83,25 @@ for ind_g_A in range(len(g_A_s)):
     data = data
     plt.subplot(211)
     plt.pcolor(XX, YY, data, norm=colors.LogNorm(vmin=1, vmax=5e3))
-    plt.xlim(1, 6)
-    plt.ylim(1, 400)
+    plt.xlim(1, 8)
+    plt.ylim(1, 1000)
     cbar = plt.colorbar()
     plt.xlabel('Cycle length')
     plt.ylabel('Number of cycle repetition')
-    
+
     plt.yscale('log')
     plt.title("Latching sequence")
     plt.subplot(212)
     plt.pcolor(XX, YY, random_data, norm=colors.LogNorm(vmin=1, vmax=5e3))
-    plt.xlim(1, 6)
-    plt.ylim(1, 400)
+    plt.xlim(1, 8)
+    plt.ylim(1, 1000)
     cbar = plt.colorbar()
     plt.xlabel('Cycle length')
     plt.ylabel('Number of cycle repetition')
     plt.title("Random sequence")
     plt.yscale('log')
-    plt.suptitle(r"Repartion of cycles, $w$=%.2f, $g_A$=%.2f, %d transitions" % (w, g_A, len(lamb)))
+    plt.suptitle(r"Repartion of cycles, $w$=%.2f, $g_A$=%.2f, %d transitions, Gsln" % (w, g_A, event_counter(retrieved_saved)))
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.savefig("../Notes/.img/Repartition_of_cycles_w=%.2f_g_A=%.2f_%d_transitions_Gsln.png" % (w, g_A, event_counter(retrieved_saved)))
     plt.show()
+    plt.close('all')

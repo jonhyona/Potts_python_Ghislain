@@ -25,8 +25,8 @@ import numpy as np
 import scipy.sparse as spsp
 import time
 
-from parameters import dt, N, S, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A,\
-    beta, g, t_0, tau, cue_ind, russo2008_mode
+from parameters import dt, N, S, a, U, tau_1, tau_2, tau_3_A, tau_3_B, \
+    beta, g, tau, russo2008_mode
 
 # As for now some variables contain information about active and inactive
 # states, one has to be able to extract them. This shouldn't be necessary in
@@ -56,13 +56,14 @@ def overlap(m_mu, delta__ksi_i_mu__k, sig_i_k):
 
 
 def h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t,
-              cue_ind=cue_ind, t_0=t_0):
+              cue_ind, t_0, w):
     """Field to unit i state k"""
     sig_i_k_act = sig_i_k[active]
     h_i_k[:] = J_i_j_k_l.dot(sig_i_k_act)
     h_i_k += w*sig_i_k_act
     if not russo2008_mode:
-        h_i_k -= w/S*spread_active_states.dot(sum_active_states.dot(sig_i_k_act))
+        h_i_k -= w/S*spread_active_states.dot(
+            sum_active_states.dot(sig_i_k_act))
     h_i_k += cue(t, delta__ksi_i_mu__k, cue_ind, t_0)
 
 
@@ -85,7 +86,7 @@ def cue(t, delta__ksi_i_mu__k, cue_ind, t_0):
 def iterate(J_i_j_k_l, delta__ksi_i_mu__k, t, analyse_time, analyse_divergence,
             sig_i_k, r_i_k, r_i_S_A, r_i_S_B, theta_i_k,
             h_i_k, m_mu, dt_r_i_S_A, dt_r_i_S_B, dt_r_i_k_act,
-            dt_theta_i_k, cue_ind=cue_ind, t_0=t_0, g_A=g_A):
+            dt_theta_i_k, cue_ind, t_0, g_A, w):
     """Update the network"""
     t0 = time.time()
 
@@ -95,7 +96,8 @@ def iterate(J_i_j_k_l, delta__ksi_i_mu__k, t, analyse_time, analyse_divergence,
     dt_theta_i_k[:] = (sig_i_k[active] - theta_i_k)/tau_2
     t3 = time.time()
 
-    h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t, cue_ind, t_0)
+    h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t,
+              cue_ind, t_0, w)
     t5 = time.time()
 
     dt_r_i_k_act[:] = (h_i_k - theta_i_k - r_i_k[active])/tau_1

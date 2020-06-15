@@ -1,3 +1,4 @@
+# coding=utf-8
 """Cues the model with all possible patterns and shows the evolution of the
 main parameters, as well as statistics on patterns and transitions that occured
 """
@@ -12,12 +13,12 @@ import scipy.stats as sts
 import numpy.random as rd
 
 # Local modules
-from parameters import set_name
 import initialisation
 import iteration
 import correlations
 import seaborn as sns
 from tqdm import tqdm
+import file_handling
 
 
 # Required for ssh execution with plots
@@ -25,117 +26,95 @@ if os.environ.get('DISPLAY', '') == '':
     print('no display found. Using non-interactive Agg backend')
     mpl.use('Agg')
 
-try:
-    f = open('data_analysis/'+set_name, 'rb')
-    dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo, cm, a, U, \
-        w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0, g, \
-        random_seed, p_0, n_p, nSnap, \
-        tS, tSnap, J_i_j_k_l, ksi_i_mu, delta__ksi_i_mu__k, \
-        transition_time, lamb, retrieved_saved, previously_retrieved_saved, \
-        outsider_saved, max_m_mu_saved, max2_m_mu_saved, \
-        r_i_k_plot, m_mu_plot, sig_i_k_plot, theta_i_k_plot = pickle.load(f)
-except IOError:
-    print('Run simulation first!')
-finally:
-    f.close()
+plt.ion()
+plt.close('all')
+simulations = ['f1691446ec79cc0cb9d1f3f898c30585',
+               'bd725ecccb665a616415eb80b3742729',
+               '779e267d7fd11b394a96bc18ac9d2261']  # w=1.4
 
-n_min = 1
-n_max = 4*len(lamb)/p
-duration_bins = np.logspace(np.log10(n_min), np.log10(n_max), 10)
-duration_x = np.logspace(np.log10(n_min), np.log10(n_max), 200)
+# simulations = ['6f276611a177a98a02697e035e772a70',
+#                '50a7e2e50bf9b00dff6cd257844d51f7',
+#                '2a123a981c3e2871ff8ff30383ecca93']  #  w=1.3
 
-g_A_s = [0., 0.5, 1.]
-min_t = min(tau_1, tau_2, tau_3_A, tau_3_B)
+simulations_above = ['12257f9b2af7fdeaa5ebeec24b71b13c',
+                     '2999e6e4eede18f9212d8abdd146e7f4',
+                     '779e267d7fd11b394a96bc18ac9d2261']  # Just above the border
 
-color_s =['blue', 'orange', 'green']
-for ind_g_A in range(len(g_A_s)):
-    g_A = g_A_s[ind_g_A]
-    set_name = str(hash((dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps,
-                     f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A,
-                     beta, tau, t_0, g, random_seed, p_0, n_p, nSnap))) + '.pkl'
-    try:
-        f = open('data_analysis/'+set_name, 'rb')
-        dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo, cm, a, U, \
-            w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0, g, \
-            random_seed, p_0, n_p, nSnap, \
-            tS, tSnap, J_i_j_k_l, ksi_i_mu, delta__ksi_i_mu__k, \
-            transition_time, lamb, retrieved_saved, previously_retrieved_saved, \
-            outsider_saved, max_m_mu_saved, max2_m_mu_saved, \
-            r_i_k_plot, m_mu_plot, sig_i_k_plot, theta_i_k_plot = pickle.load(f)
-    except IOError:
-        print('Run simulation first!, g_A = '+str(g_A))
-    finally:
-        f.close()
+# ryom_data = ['seq_w1.4_gA0.0', 'seq_w1.4_gA0.5', 'seq_w1.4_gA1.0']
+color_s = ['blue', 'orange', 'green']
+color_s_ryom = ['navy', 'peru', 'darkolivegreen']
 
-    ind_t = np.linspace(
-        0, len(transition_time)-1, len(transition_time), dtype=int)
-    lamb = np.array(lamb)
-    transition_time = np.array(transition_time)
-    lambda_threshold_s = [0.2, 0.25, 0.3, 0.35]
-    n_th = len(lambda_threshold_s)
 
-    ind_cue = 0
-    previous_t = -np.inf
-    new_cue_ind = []
-    for it in range(len(transition_time)):
-        tt = transition_time[it]
-        if tt < previous_t:
-            ind_cue += 1
-            new_cue_ind.append(it)
-        previous_t = tt
-    print(ind_cue)
-    new_cue_ind.append(+np.inf)
+def plot_length_highly_correlated(simulation_list):
+    for ind_key in range(len(simulation_list)):
+        print('ind_key = %d' % ind_key)
+        simulation_key = simulation_list[ind_key]
 
+        (dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo,
+         cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0,
+         g, random_seed, p_0, n_p, nSnap, russo2008_mode) = \
+            file_handling.load_parameters(simulation_key)
+
+        lamb = file_handling.load_overlap(simulation_key)
+        cue_number = len(lamb)
+
+        n_min = 1
+        n_max = 80
+        # n_max = 10*file_handling.event_counter(lamb, p)/p
+        duration_bins = np.linspace(n_min, n_max, 100)
+        # duration_bins = np.logspace(np.log10(n_min), np.log10(n_max), 10)
+        # duration_x = np.logspace(np.log10(n_min), np.log10(n_max), 200)
+
+        lambda_threshold_s = [0.2, 0.25, 0.3, 0.35]
+        lambda_threshold_s = [0.3]
+        n_th = len(lambda_threshold_s)
+
+        for ind_th in range(n_th):
+            threshold = lambda_threshold_s[ind_th]
+            high_sequence_durations = []
+            for cue_ind in range(cue_number):
+                length = 0
+                for ind_trans in range(len(lamb[cue_ind])):
+                    if lamb[cue_ind][ind_trans] > threshold:
+                        length += 1
+                    elif length != 0:
+                        high_sequence_durations.append(length)
+                        length = 0
+                if length != 0:
+                    high_sequence_durations.append(length)
+
+            high_sequence_durations = np.array(high_sequence_durations)
+
+            # smooth = sts.gaussian_kde(np.log10(high_sequence_durations+dt))
+
+            # plt.subplot(n_th//2+n_th % 2, 2, ind_th+1)
+            # smooth_data = smooth(np.log10(duration_x))
+            # rug_data = np.histogram(high_sequence_durations, bins=duration_bins)[0]
+            # smooth_data = np.max(rug_data)/np.max(smooth_data)*smooth_data
+            # plt.plot(duration_x, smooth_data, color=color_s[ind_key])
+            # plt.hist(high_sequence_durations, alpha=0.3,
+            #          density=False, color=color_s[ind_key])
+            # sns.kdeplot(high_sequence_durations, cumulative=True, color=color_s[ind_key], label='g_A %.1f, w %.1f' % (g_A, w))
+            sns.kdeplot(high_sequence_durations, color=color_s[ind_key], label='g_A %.1f' % g_A)
+            plt.xlim(n_min, n_max)
+            # plt.xscale('log')
     for ind_th in range(n_th):
-        high_sequence_durations = []
-        lambda_threshold = lambda_threshold_s[ind_th]
-        high_lambda = lamb > lambda_threshold
-        low_lambda = lamb < lambda_threshold
-        for mu in range(ind_cue):
-            cue_ind = np.logical_and(ind_t < new_cue_ind[mu+1],
-                                     ind_t >= new_cue_ind[mu])
-            t_last_low = transition_time[cue_ind][0]
-            low_transition_time = transition_time[
-                np.logical_and(low_lambda, cue_ind)]
-            high_transition_time = transition_time[
-                np.logical_and(high_lambda, cue_ind)]
-            for ii in range(len(low_transition_time)-1):
-                t = low_transition_time[ii+1]
-                if np.logical_and(high_transition_time < t,
-                                  high_transition_time > t_last_low).any():
-                    high_sequence_durations.append(np.sum(
-                        np.logical_and(high_transition_time < t,
-                                       high_transition_time > t_last_low)))
-                t_last_low = t
+        # plt.subplot(n_th//2+n_th % 2, 2, ind_th+1)
+        plt.xlabel('Length of highly correlated sequence')
+        plt.ylabel('Density')
+        # plt.title(
+        #     r'$\lambda_{th}$='+str(lambda_threshold_s[ind_th])+',$w$='+str(w))
+    # plt.subplot(n_th//2+n_th % 2, 1, 1)
+    plt.legend()
+    # plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.tight_layout()
+    plt.show()
 
-            if len(high_transition_time) == 0:
-                high_sequence_durations.append(0)
+plot_length_highly_correlated(simulations_above)
 
-            elif len(low_transition_time) == 0 \
-                    or low_transition_time[-1] < high_transition_time[-1]:
-                high_sequence_durations.append(len(high_transition_time))
-        high_sequence_durations = np.array(high_sequence_durations)
 
-        smooth = sts.gaussian_kde(np.log10(high_sequence_durations+dt))
 
-        plt.subplot(n_th//2+n_th%2, 2, ind_th+1)
-        smooth_data = smooth(np.log10(duration_x))
-        rug_data = np.histogram(high_sequence_durations, bins=duration_bins)[0]
-        plt.hist(high_sequence_durations, bins=duration_bins, alpha=0.3, density=False, color=color_s[ind_g_A])
-        smooth_data = np.max(rug_data)/np.max(smooth_data)*smooth_data
-        plt.plot(duration_x, smooth_data, color=color_s[ind_g_A])
-        plt.xlim(n_min, n_max)
-        plt.xscale('log')
-for ind_th in range(n_th):
-    plt.subplot(n_th//2+n_th%2, 2, ind_th+1)
-    plt.xlabel('Length of highly correlated sequence')
-    plt.ylabel('Density')
-    plt.title(r'$\lambda_{th}$='+str(lambda_threshold_s[ind_th])+', $w$='+str(w))
-plt.subplot(n_th//2+n_th%2, 2, 1)
-plt.legend({r'$g_A=0.0$', r'$g_A=0.5$', r'$g_A=1.0$'})
-# plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-plt.tight_layout()
-plt.show()
+
 
 
 # s = 2
@@ -197,12 +176,7 @@ plt.show()
 # plt.title(r'w=' +str(w) + ', $\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
 # plt.savefig(set_name[:-4] + '_time_evolution.png')
 
-# plt.figure(1)
-# sns.distplot(lamb)
-# plt.xlabel(r'$\lambda$')
-# plt.ylabel('Density')
-# plt.title(r'w=' +str(w) + ', $\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')
-# plt.savefig(set_name[:-4] + '_crossover_histogram.png')
+
 
 # plt.figure('2D plots')
 # plt.suptitle(r'Correlations between transition patterns, w=' +str(w) + ', $\gamma$=' + str(g_A) + ' ; ' + str(len(lamb)) + ' transitions')

@@ -8,7 +8,7 @@ from and their behavior
 # Integration
 dt = 1.                         # Time-step
 tSim = 1e5                      # Number of runs
-nSnap = min(int(tSim/dt), 2)    # Resampling to plot time-evolution
+nSnap = min(int(tSim/dt), 10)    # Resampling to plot time-evolution
 
 # Network
 
@@ -17,13 +17,15 @@ N = 1000                        # Number of units in the network
 S = 7                           # Number of states
 p = 200                         # Number of memorized patterns
 
-# Pattern generation
-num_fact = 200                  # Number of factors generated
-p_fact = 40                     # Number of children per factor
-dzeta = 0.0000002               # Exponential decay of pattern importance
-a_pf = 0.004                    # Input sparsity
-eps = 0.000001                  # Safety net
-f_russo = 0.1                   # Pattern sparsity in Russo2008 algorithm
+correlated = True
+
+# Pattern generation, only important if correlated==True
+num_fact = 25                # Number of factors generated
+p_fact = 16                  # Number of children per factor
+dzeta = 0.005                # Exponential decay of pattern importance
+a_pf = 0.0                   # Input sparsity
+eps = 0.000001               # Safety net
+f_russo = 0.1                # Pattern sparsity in Russo2008 algorithm
 
 # Building network
 cm = 150                        # Connectivity
@@ -53,3 +55,11 @@ n_p = 1                         # Number of cues
 random_seed = 2021
 # The model changed a bit after Russo2008 see h funtion in iteration.py
 russo2008_mode = False
+
+if not correlated:
+    num_fact = 'NA'          # Number of factors generated
+    p_fact = 'NA'            # Number of children per factor
+    dzeta = 'NA'             # Exponential decay of pattern importance
+    a_pf = 'NA'              # Input sparsity
+    eps = 'NA'               # Safety net
+    f_russo = 'NA'           # Pattern sparsity in Russo2008 algorithm

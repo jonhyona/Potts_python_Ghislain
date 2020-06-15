@@ -24,7 +24,7 @@ from parameters import N, S, p, num_fact, p_fact, dzeta, a_pf, eps, a, \
 import pandas as pd
 
 
-def get_uncorrelated():
+def get_uncorrelated(random_seed=random_seed):
     """ Generates a set of uncorrelated patterns
 
     Returns
@@ -56,7 +56,7 @@ def get_uncorrelated():
     return ksi_i_mu, delta__ksi_i_mu__k
 
 
-def get_vezha():
+def get_vezha(random_seed=random_seed):
     """ Generates correlated patterns from the parents-children algorithm used by
     Vezha (most recent algorithm)
 
@@ -123,7 +123,7 @@ def get_vezha():
     return ksi_i_mu, delta__ksi_i_mu__k
 
 
-def get_vijay(f_russo=f_russo):
+def get_vijay(f_russo=f_russo, random_seed=random_seed):
     """ Generates correlated patterns from the parents-children algorithm used by
     Vijay in Russo2008
 
@@ -186,7 +186,7 @@ def get_vijay(f_russo=f_russo):
     return ksi_i_mu, delta__ksi_i_mu__k
 
 
-def get_2_patterns(C1, C2):
+def get_2_patterns(C1, C2, random_seed=random_seed):
     """ Generates 2 correlated patterns with correlations C1 and C2
 
     Parameters

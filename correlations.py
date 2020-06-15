@@ -48,9 +48,8 @@ def active_inactive(ksi1, ksi2, normalized=True):
     """ Proportion of units that are active in one state and inactive in the other
     """
     if normalized:
-        return np.sum((ksi1 == S) * (1-(ksi2 == S)), axis=0)
+        return np.sum((ksi1 == S) * (1-(ksi2 == S)), axis=0)/N/a
     return np.sum((ksi1 == S) * (1-(ksi2 == S)), axis=0)
-
 
 
 def cross_correlations(ksi_i_mu, normalized=True):
@@ -81,6 +80,11 @@ def cross_correlations(ksi_i_mu, normalized=True):
 
     corr = map(fun, items)
     return np.array(list(corr))
+
+
+def shared_inactive(ksi_i_mu):
+    M = np.transpose(ksi_i_mu == S).dot(ksi_i_mu == S)
+    return M/N/a
 
 
 def overlap(ksi1, ksi2):
@@ -141,3 +145,32 @@ def correlations_1D_hist(ksi_i_mu, C1C2C0=None):
     plt.ylabel('Active, inactive')
     plt.xlim((0, 1))
     plt.plot()
+
+
+def correlation_patt_state(ksi_i_mu, C_i_j, mu, nu):
+    tmp = np.multiply(
+        ksi_i_mu[:, mu] == ksi_i_mu[:, nu],
+        ksi_i_mu[:, mu] != S)
+    # print(np.sum(tmp))
+    C_as = C_i_j.dot(tmp)
+
+    tmp = np.multiply(ksi_i_mu[:, mu] != S, ksi_i_mu[:, nu] != S)
+    tmp = np.multiply(tmp, ksi_i_mu[:, mu] != ksi_i_mu[:, nu])
+    # print(np.sum(tmp))
+    C_ad = C_i_j.dot(tmp)
+
+    tmp = np.multiply(ksi_i_mu[:, mu] != S, ksi_i_mu[:, nu] == S)
+    # print(np.sum(tmp))
+    C_ai = C_i_j.dot(tmp)
+
+    tmp = np.multiply(ksi_i_mu[:, mu] != S, ksi_i_mu[:, nu] != S)
+    # print(np.sum(tmp))
+    C_0 = C_i_j.dot(tmp)
+
+    corr = (1-a/S)**2*C_as - 2*a/S*(1-a/S)*(C_ad + C_ai) + (a/S)**2*C_0
+
+    proj = (ksi_i_mu[:, mu] == S)
+
+    prod = np.multiply(proj, corr)
+    # print()
+    return (1-a/S)*np.sum(prod)/N/a

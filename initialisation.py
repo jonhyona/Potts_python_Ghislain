@@ -11,10 +11,10 @@ import scipy.sparse as spsp
 import numpy as np
 import numpy.random as rd
 import iteration
-from parameters import N, S, p, a, U, beta, random_seed, cm, g_A, t_0
+from parameters import N, S, p, a, U, beta, cm, t_0
 
 
-def hebbian_tensor(delta__ksi_i_mu__k):
+def hebbian_tensor(delta__ksi_i_mu__k, random_seed):
     """
     Computes the hebbian tensor J_i_k_k_l, i.e. interactions between units.
 
@@ -59,10 +59,10 @@ def hebbian_tensor(delta__ksi_i_mu__k):
         np.transpose(delta__ksi_i_mu__k-a/S))
     J_i_j_k_l = kronMask.multiply(J_i_j_k_l)/(cm*a*(1-a/S))
 
-    return spsp.bsr_matrix(J_i_j_k_l, blocksize=(S, S))
+    return spsp.bsr_matrix(J_i_j_k_l, blocksize=(S, S)), mask
 
 
-def network(J_i_j_k_l, delta__ksi_i_mu__k, g_A=g_A):
+def network(J_i_j_k_l, delta__ksi_i_mu__k, g_A, w):
     """
     Initializing the network in stationnary-rest-state
 
@@ -132,7 +132,7 @@ def network(J_i_j_k_l, delta__ksi_i_mu__k, g_A=g_A):
     theta_i_k[:] = sig_i_k[active]
 
     iteration.h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, 0,
-                        0, t_0)
+                        0, t_0, w)
     r_i_k[active] = h_i_k
     r_i_S_A = g_A * (1 - sig_i_k[inactive])
     r_i_S_B = (1 - g_A) * (1 - sig_i_k[inactive])

@@ -42,6 +42,12 @@ if len(sys.argv) >= 3:
     g_A = float(sys.argv[2])
 if len(sys.argv) >= 4:
     tSim = float(sys.argv[3])
+if len(sys.argv) >= 5:
+    random_seed = int(sys.argv[4])
+if len(sys.argv) >= 6:
+    w = float(sys.argv[5])
+if len(sys.argv) >= 7:
+    a_pf = float(sys.argv[6])
 
 
 param = (dt, tSim, N, S, p, num_fact, p_fact,
@@ -54,9 +60,8 @@ param = (dt, tSim, N, S, p, num_fact, p_fact,
 
 # Some data are saved using simple text. Others are stored using the
 # pkl format, which enables to store any kind of data very easily
-pkl_name = file_handling.get_pkl_name(param)
-txt_name = file_handling.get_txt_name(param)
-ksi_i_mu, delta__ksi_i_mu__k, J_i_j_k_l = file_handling.load_network(pkl_name)
+key = file_handling.get_key(param)
+ksi_i_mu, delta__ksi_i_mu__k, J_i_j_k_l, _ = file_handling.load_network(key)
 
 # Time arrays
 tS = np.arange(0, tSim, dt)
@@ -89,7 +94,7 @@ previously_retrieved = -1
 
 r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
     dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k \
-    = initialisation.network(J_i_j_k_l, delta__ksi_i_mu__k)
+    = initialisation.network(J_i_j_k_l, delta__ksi_i_mu__k, g_A, w)
 
 r_i_k_plot = np.zeros((nSnap, N*(S+1)))
 m_mu_plot = np.zeros((nSnap, p))
@@ -101,16 +106,21 @@ waiting_validation = False
 eta = False
 cpt_idle = 0
 i_snap = 0
+d12 = 0
+duration = 0
+
+coact_pos = np.zeros((p, p))
+coact_neg = coact_pos.copy()
 
 r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
     dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k = initialisation.network(
-        J_i_j_k_l, delta__ksi_i_mu__k, g_A)
+        J_i_j_k_l, delta__ksi_i_mu__k, g_A, w)
 
 for iT in tqdm(range(nT)):
     iteration.iterate(J_i_j_k_l, delta__ksi_i_mu__k, tS[iT], analyseTime,
                       analyseDivergence, sig_i_k, r_i_k, r_i_S_A,
                       r_i_S_B, theta_i_k, h_i_k, m_mu, dt_r_i_S_A,
-                      dt_r_i_S_B, dt_r_i_k_act, dt_theta_i_k, cue, t_0, g_A)
+                      dt_r_i_S_B, dt_r_i_k_act, dt_theta_i_k, cue, t_0, g_A, w)
 
     # Saving data for plots
     if tS[iT] >= tSnap[i_snap]:
@@ -120,7 +130,15 @@ for iT in tqdm(range(nT)):
         theta_i_k_plot[i_snap, :] = theta_i_k
         i_snap += 1
 
-    if tS[iT] > t_0:
+    if tS[iT] > t_0+tau_1:
+        # print((np.outer(m_mu, m_mu)).shape)
+        coact = np.outer(m_mu, m_mu)
+        tmp_ind = coact > coact_pos
+        coact_pos[tmp_ind] = coact[tmp_ind]
+        tmp_ind = coact < coact_neg
+        coact_neg[tmp_ind] = coact[tmp_ind]
+
+        duration = tS[iT]-t_0
         retrieved_pattern = np.argmax(m_mu)
         max_m_mu = m_mu[retrieved_pattern]
         m_mu[retrieved_pattern] = - np.inf
@@ -164,7 +182,7 @@ for iT in tqdm(range(nT)):
             transition_counter += 1
             cpt_idle = 0
             eta = True
-        previously_retrieved = retrieved_pattern
+            previously_retrieved = retrieved_pattern
 
         # Check that the network asn't fallen into its rest state
         if max_m_mu < .01:
@@ -175,8 +193,25 @@ for iT in tqdm(range(nT)):
         else:
             cpt_idle = 0
 
+coactivation = coactivation / duration
+mean_mu = mean_mu / duration
+covariance = coactivation - np.outer(mean_mu, mean_mu)
+d12 = eta*d12
+
+
 file_handling.save_dynamics(cue, (transition_time, lamb, just_next_saved,
                                   retrieved_saved, previously_retrieved_saved,
                                   outsider_saved, max_m_mu_saved,
                                   max2_m_mu_saved),
-                            txt_name)
+                            key)
+
+file_handling.save_evolution(cue, m_mu_plot, key)
+
+file_handling.save_metrics(cue, d12, duration, key)
+
+# file_handling.save_coactivation(cue, coactivation, key)
+# file_handling.save_covariance(cue, covariance, key)
+
+file_handling.save_coact_pos(cue, coact_pos, key)
+file_handling.save_coact_neg(cue, coact_neg, key)
+
