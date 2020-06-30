@@ -196,18 +196,14 @@ for iT in tqdm(range(nT)):
 
 d12 = eta*d12
 
-
-file_handling.save_dynamics(cue, kick_seed, (transition_time, lamb,
-                                             retrieved_saved,
-                                             max_m_mu_saved,
-                                             max2_m_mu_saved), key)
+file_handling.save_transition_time(cue, kick_seed, transition_time, key)
+file_handling.save_crossover(cue, kick_seed, lamb, key)
+file_handling.save_retrieved(cue, kick_seed, retrieved_saved, key)
+file_handling.save_max_m_mu(cue, kick_seed, max_m_mu_saved, key)
+file_handling.save_max2_m_mu(cue, kick_seed, max2_m_mu_saved, key)
 
 file_handling.save_evolution(cue, kick_seed, m_mu_plot, key)
-
 file_handling.save_metrics(cue, kick_seed, d12, duration, key)
-
-# file_handling.save_coactivation(cue, coactivation, key)
-# file_handling.save_covariance(cue, covariance, key)
 
 file_handling.save_coact_pos(cue, kick_seed, coact_pos, key)
 file_handling.save_coact_neg(cue, kick_seed, coact_neg, key)
