@@ -48,6 +48,8 @@ if len(sys.argv) >= 6:
     w = float(sys.argv[5])
 if len(sys.argv) >= 7:
     a_pf = float(sys.argv[6])
+if len(sys.argv) >= 8:
+    kick_seed = int(sys.argv[7])
 
 
 param = (dt, tSim, N, S, p, num_fact, p_fact,
