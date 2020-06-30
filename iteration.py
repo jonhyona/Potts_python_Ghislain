@@ -24,8 +24,9 @@ at each iteration.
 import numpy as np
 import scipy.sparse as spsp
 import time
+import numpy.random as rd
 
-from parameters import dt, N, S, a, U, tau_1, tau_2, tau_3_A, tau_3_B, \
+from parameters import dt, N, S, a, U, tau_1, tau_2, tau_3_A, tau_3_B, p, \
     beta, g, tau, russo2008_mode
 
 # As for now some variables contain information about active and inactive
@@ -45,6 +46,7 @@ spread_active_states = spsp.kron(spsp.eye(N), np.ones((S, 1)))
 sum_active_inactive_states = spsp.kron(spsp.eye(N), np.ones((1, S+1)))
 spread_active_inactive_states = spsp.kron(spsp.eye(N), np.ones((S+1, 1)))
 
+
 U_i = U*np.zeros(N*(S+1))
 U_i[S::S+1] = U*np.ones(N)
 
@@ -56,7 +58,7 @@ def overlap(m_mu, delta__ksi_i_mu__k, sig_i_k):
 
 
 def h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t,
-              cue_ind, t_0, w):
+              cue_ind, t_0, w, cue_mask):
     """Field to unit i state k"""
     sig_i_k_act = sig_i_k[active]
     h_i_k[:] = J_i_j_k_l.dot(sig_i_k_act)
@@ -64,7 +66,7 @@ def h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t,
     if not russo2008_mode:
         h_i_k -= w/S*spread_active_states.dot(
             sum_active_states.dot(sig_i_k_act))
-    h_i_k += cue(t, delta__ksi_i_mu__k, cue_ind, t_0)
+    h_i_k += cue(t, delta__ksi_i_mu__k, cue_ind, t_0, cue_mask)
 
 
 def sig_fun(sig_i_k, r_i_k):
@@ -76,17 +78,32 @@ def sig_fun(sig_i_k, r_i_k):
     sig_i_k[:] = sig_i_k/Z_i
 
 
-def cue(t, delta__ksi_i_mu__k, cue_ind, t_0):
+def get_units_to_cue(cue_ind, seed, delta__ksi_i_mu__k, muted_prop):
+    """ Selects randomly units of the cued pattern that should be kicked"""
+    deck = np.array(range(int(N*a)))
+    gen = rd.RandomState(seed)
+    gen.shuffle(deck)
+    muted = deck[:int(N*a*muted_prop)]
+    active = delta__ksi_i_mu__k[:, cue_ind] > 0.5
+    print(active.shape)
+    muted_index = np.array(range(S*N))[active]
+    muted_index[muted] = 0
+    cue_mask = delta__ksi_i_mu__k[:, cue_ind].copy()
+    cue_mask[muted_index] = 0
+    return cue_mask
+
+
+def cue(t, delta__ksi_i_mu__k, cue_ind, t_0, cue_mask):
     """ Additional field term to cue the network"""
     return g * (t > t_0) \
         * np.exp(-(t-t_0)/tau) \
-        * delta__ksi_i_mu__k[:, cue_ind]
+        * np.multiply(delta__ksi_i_mu__k[:, cue_ind], cue_mask)
 
 
 def iterate(J_i_j_k_l, delta__ksi_i_mu__k, t, analyse_time, analyse_divergence,
             sig_i_k, r_i_k, r_i_S_A, r_i_S_B, theta_i_k,
             h_i_k, m_mu, dt_r_i_S_A, dt_r_i_S_B, dt_r_i_k_act,
-            dt_theta_i_k, cue_ind, t_0, g_A, w):
+            dt_theta_i_k, cue_ind, t_0, g_A, w, cue_mask):
     """Update the network"""
     t0 = time.time()
 
@@ -97,7 +114,7 @@ def iterate(J_i_j_k_l, delta__ksi_i_mu__k, t, analyse_time, analyse_divergence,
     t3 = time.time()
 
     h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, t,
-              cue_ind, t_0, w)
+              cue_ind, t_0, w, cue_mask)
     t5 = time.time()
 
     dt_r_i_k_act[:] = (h_i_k - theta_i_k - r_i_k[active])/tau_1

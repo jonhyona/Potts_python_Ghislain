@@ -25,7 +25,11 @@ if len(sys.argv) >= 3:
 if len(sys.argv) >= 4:
     tSim = float(sys.argv[3])
 if len(sys.argv) >= 5:
-    random_seed = int(sys.arv[4])
+    random_seed = int(sys.argv[4])
+if len(sys.argv) >= 6:
+    w = float(sys.argv[5])
+if len(sys.argv) >= 7:
+    a_pf = float(sys.argv[6])
 
 print(cue, g_A, tSim)
 

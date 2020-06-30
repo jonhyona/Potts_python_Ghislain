@@ -10,7 +10,7 @@ import os
 # several cues in parallel. So the number of threads numpy can use is
 # set to 1
 os.environ["OMP_NUM_THREADS"] = "1" # export OMP_NUM_THREADS=4
-os.environ["OPENBLAS_NUM_THREADS"] = "1" # export OPENBLAS_NUM_THREADS=4 
+os.environ["OPENBLAS_NUM_THREADS"] = "1" # export OPENBLAS_NUM_THREADS=4
 os.environ["MKL_NUM_THREADS"] = "1" # export MKL_NUM_THREADS=6
 os.environ["VECLIB_MAXIMUM_THREADS"] = "1" # export VECLIB_MAXIMUM_THREADS=4
 os.environ["NUMEXPR_NUM_THREADS"] = "1" # export NUMEXPR_NUM_THREADS=6
@@ -20,7 +20,7 @@ import sys
 # Local modules
 from parameters import dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, \
     f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, \
-    t_0, g, random_seed, p_0, n_p, nSnap, russo2008_mode
+    t_0, g, random_seed, p_0, n_p, nSnap, russo2008_mode, kick_seed, muted_prop
 import initialisation
 import iteration
 import file_handling
@@ -62,6 +62,8 @@ param = (dt, tSim, N, S, p, num_fact, p_fact,
 # pkl format, which enables to store any kind of data very easily
 key = file_handling.get_key(param)
 ksi_i_mu, delta__ksi_i_mu__k, J_i_j_k_l, _ = file_handling.load_network(key)
+cue_mask = iteration.get_units_to_cue(cue, kick_seed,
+                                      delta__ksi_i_mu__k, muted_prop)
 
 # Time arrays
 tS = np.arange(0, tSim, dt)
@@ -94,7 +96,7 @@ previously_retrieved = -1
 
 r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
     dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k \
-    = initialisation.network(J_i_j_k_l, delta__ksi_i_mu__k, g_A, w)
+    = initialisation.network(J_i_j_k_l, delta__ksi_i_mu__k, g_A, w, cue_mask)
 
 r_i_k_plot = np.zeros((nSnap, N*(S+1)))
 m_mu_plot = np.zeros((nSnap, p))
@@ -114,13 +116,14 @@ coact_neg = coact_pos.copy()
 
 r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
     dt_r_i_S_B, theta_i_k, dt_theta_i_k, h_i_k = initialisation.network(
-        J_i_j_k_l, delta__ksi_i_mu__k, g_A, w)
+        J_i_j_k_l, delta__ksi_i_mu__k, g_A, w, cue_mask)
 
 for iT in tqdm(range(nT)):
-    iteration.iterate(J_i_j_k_l, delta__ksi_i_mu__k, tS[iT], analyseTime,
-                      analyseDivergence, sig_i_k, r_i_k, r_i_S_A,
-                      r_i_S_B, theta_i_k, h_i_k, m_mu, dt_r_i_S_A,
-                      dt_r_i_S_B, dt_r_i_k_act, dt_theta_i_k, cue, t_0, g_A, w)
+    iteration.iterate(J_i_j_k_l, delta__ksi_i_mu__k, tS[iT],
+                      analyseTime, analyseDivergence, sig_i_k, r_i_k,
+                      r_i_S_A, r_i_S_B, theta_i_k, h_i_k, m_mu,
+                      dt_r_i_S_A, dt_r_i_S_B, dt_r_i_k_act,
+                      dt_theta_i_k, cue, t_0, g_A, w, cue_mask)
 
     # Saving data for plots
     if tS[iT] >= tSnap[i_snap]:
@@ -211,4 +214,3 @@ file_handling.save_metrics(cue, d12, duration, key)
 
 file_handling.save_coact_pos(cue, coact_pos, key)
 file_handling.save_coact_neg(cue, coact_neg, key)
-

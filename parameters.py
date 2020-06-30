@@ -52,6 +52,11 @@ cue_ind = 1                     # Default pattern to cue
 p_0 = 0                         # First cue, useless if cue as a parameter
 n_p = 1                         # Number of cues
 
+# Introduce variability across simulations kick to some random
+# among the pattern
+muted_prop = 0.9
+kick_seed = 1
+
 random_seed = 2021
 # The model changed a bit after Russo2008 see h funtion in iteration.py
 russo2008_mode = False
