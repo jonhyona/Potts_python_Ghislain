@@ -88,8 +88,6 @@ outsider_saved = []
 
 # At low crossover, remembers the pattern with maximal overlap even if
 # it doesn't comes to the overlap threshold
-just_next_saved = []
-previously_retrieved_saved = []
 transition_counter = 0
 cpt_idle = 0                    # Counts time since when the network is idle
 d12 = 0                         # Latching quality metric
@@ -152,37 +150,35 @@ for iT in tqdm(range(nT)):
         m_mu[retrieved_pattern] = max_m_mu
         d12 += dt*(max_m_mu - max2_m_mu)
 
-        # The transition detection should be adapted. It is simpler
-        # and as efficient in the C code
-        if retrieved_pattern != previously_retrieved \
-           and not waiting_validation:
-            tmp = [tS[iT], max_m_mu, retrieved_pattern,
-                   previously_retrieved, outsider, max_m_mu, max2_m_mu]
-            waiting_validation = True
-            previous_idle = True
-            new_reached_threshold = False
-        # Transitions are validated only if previous patterns dies
-        if waiting_validation and not previous_idle \
-           and m_mu[tmp[2]] < 0.1:
-            previous_idle = True
-        # Transitions are validated only if the pattern reaches an overlap
-        # of 0.5. This avoid to record low-crossover transitions when
-        # latching dies
-        if waiting_validation and not new_reached_threshold \
-           and max_m_mu > .5:
-            new_reached_threshold = True
-        if waiting_validation and previous_idle \
-           and new_reached_threshold:
+        # # The transition detection should be adapted. It is simpler
+        # # and as efficient in the C code
+        # if retrieved_pattern != previously_retrieved \
+        #    and not waiting_validation:
+        #     tmp = [tS[iT], max_m_mu, retrieved_pattern,
+        #            previously_retrieved, outsider, max_m_mu, max2_m_mu]
+        #     waiting_validation = True
+        #     previous_idle = True
+        #     new_reached_threshold = False
+        # # Transitions are validated only if previous patterns dies
+        # if waiting_validation and not previous_idle \
+        #    and m_mu[tmp[2]] < 0.1:
+        #     previous_idle = True
+        # # Transitions are validated only if the pattern reaches an overlap
+        # # of 0.5. This avoid to record low-crossover transitions when
+        # # latching dies
+        # if waiting_validation and not new_reached_threshold \
+        #    and max_m_mu > .5:
+        #     new_reached_threshold = True
+        # if waiting_validation and previous_idle \
+        #    and new_reached_threshold:
+        if retrieved_pattern != previously_retrieved and max_m_mu > 0.5:
             waiting_validation = False
             eta = True
-            transition_time.append(tmp[0])
-            lamb.append(tmp[1])
-            just_next_saved.append(tmp[2])
+            transition_time.append(tS[iT])
+            lamb.append(max2_m_mu[1])
             retrieved_saved.append(retrieved_pattern)
-            previously_retrieved_saved.append(tmp[3])
-            outsider_saved.append(tmp[4])
-            max_m_mu_saved.append(tmp[5])
-            max2_m_mu_saved.append(tmp[6])
+            max_m_mu_saved.append(max_m_mu)
+            max2_m_mu_saved.append(max2_m_mu)
 
             transition_counter += 1
             cpt_idle = 0
@@ -202,10 +198,7 @@ d12 = eta*d12
 
 
 file_handling.save_dynamics(cue, kick_seed, (transition_time, lamb,
-                                             just_next_saved,
                                              retrieved_saved,
-                                             previously_retrieved_saved,
-                                             outsider_saved,
                                              max_m_mu_saved,
                                              max2_m_mu_saved), key)
 
