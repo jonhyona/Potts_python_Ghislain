@@ -5,8 +5,21 @@ import numpy as np
 import numpy.random as rd
 
 plt.ion()
-simulations = ['4406010109634386043', '8276126441040930693',
-               '2037770147520999148']
+simulations = ['83058b3d6f4ce563cecce654468e59ec',
+               '5fde28fc139c3252f8d52b513c7b2364',
+               '6211c3984769aa0bde863c1fa97be8ef',
+               '3ae4c5af2e17c42b644210bae0c6c88b',
+               'f7fbf477d959473b676fd5e53a243e51',
+               '0235947fe67f095afdce360a44932aa7',
+               '3f9349f4d58a0590c6575920163dbd45',
+               '252c00a8ee9a6dbb553e7166d460b4fe',
+               '06381599d71447f5c7c667e3e3106f88',
+               'e668a8d56be4b85ea0fe063c0511c617',
+               '494a1f3016417558967fc452e83604b0',
+               '5c135a6e2604d153a91e4fd757218b49',
+               '12a26501a9dd07618c85bd6f324237ed',
+               '1d13122682b8d57568e86741055d953b',
+               'f61c95aad79795bbe476c2a6692025d5']
 
 ryom_data = ['seq_w1.4_gA0.0', 'seq_w1.4_gA0.5', 'seq_w1.4_gA1.0']
 color_s = ['blue', 'orange', 'green']
@@ -19,7 +32,7 @@ def event_counter(retrieved):
     return res
 
 
-for ind_key in range(len(simulations)):
+for ind_key in range(3):
     print('ind_key = %d' % ind_key)
     simulation_key = simulations[ind_key]
     ryom_name = ryom_data[ind_key]
@@ -29,9 +42,9 @@ for ind_key in range(len(simulations)):
      f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A,
      tau_3_B, g_A,
      beta, tau, t_0, g, random_seed, p_0, n_p, nSnap,
-     russo2008_mode) = file_handling.load_parameters(simulation_key+'.pkl')
+     russo2008_mode) = file_handling.load_parameters(simulation_key)
 
-    retrieved_saved = file_handling.load_retrieved(simulation_key+'.txt')
+    retrieved_saved = file_handling.load_retrieved(simulation_key)
     # retrieved_saved = file_handling.load_ryom_retrieved(ryom_name)
     cue_number = len(retrieved_saved)
 
@@ -103,5 +116,3 @@ for ind_key in range(len(simulations)):
     plt.suptitle(r"Repartion of cycles, $w$=%.2f, $g_A$=%.2f, %d transitions, Gsln" % (w, g_A, event_counter(retrieved_saved)))
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.savefig("../Notes/.img/Repartition_of_cycles_w=%.2f_g_A=%.2f_%d_transitions_Gsln.png" % (w, g_A, event_counter(retrieved_saved)))
-    plt.show()
-    plt.close('all')

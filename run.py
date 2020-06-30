@@ -193,9 +193,6 @@ for iT in tqdm(range(nT)):
         else:
             cpt_idle = 0
 
-coactivation = coactivation / duration
-mean_mu = mean_mu / duration
-covariance = coactivation - np.outer(mean_mu, mean_mu)
 d12 = eta*d12
 
 
