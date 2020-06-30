@@ -130,7 +130,7 @@ p_B_ABA, p_AB_ABA, p_B, num_B, num_AB, num_ABA = \
 p_ABA = num_ABA/np.sum(num_B)
 p_AB = num_AB/np.sum(num_B)
 metric = 0
-metric_markhov = 0
+metric_markov = 0
 for pattA in range(p):
     for pattB in range(p):
         metric += (p_ABA[pattA, pattB]*p_B[pattB]
@@ -153,7 +153,7 @@ proba_table = np.zeros((p, p))
 num_A = np.sum(num_AB, axis=1)
 occuring_A = num_A != 0
 proba_table[occuring_A, :] = num_AB[occuring_A, :] / num_A[occuring_A, None]
-retrieved_markhov = [[] for mu in range(p)]
+retrieved_markov = [[] for mu in range(p)]
 
 for cue_ind in range(p):
     if len(retrieved_saved[cue_ind]) >= 3:
@@ -161,27 +161,27 @@ for cue_ind in range(p):
         duration = len(retrieved_saved[cue_ind])
         if cue_ind != retrieved_saved[cue_ind][0]:
             duration += 1
-        retrieved_markhov[cue_ind].append(cue_ind)
+        retrieved_markov[cue_ind].append(cue_ind)
     if occuring_A[cue_ind]:
             prev_mu = cue_ind
             for ind_trans in range(duration-1):
                 prev_mu = rd.choice(np.array(range(p)), 1,
                                     p=proba_table[prev_mu, :].ravel())[0]
-                retrieved_markhov[cue_ind].append(prev_mu)
+                retrieved_markov[cue_ind].append(prev_mu)
 
 p_B_ABA, p_AB_ABA, p_B, num_B, num_AB, num_ABA = \
-    trio_prob_table(retrieved_markhov, key)
+    trio_prob_table(retrieved_markov, key)
 p_ABA = num_ABA/np.sum(num_B)
 p_AB = num_AB/np.sum(num_B)
 metric = 0
-metric_markhov = 0
+metric_markov = 0
 for pattA in range(p):
     for pattB in range(p):
         metric += (p_ABA[pattA, pattB]*p_B[pattB]
                    - p_AB[pattA, pattB]*p_AB[pattB, pattA])**2
 print(np.sqrt(metric))
 num_ABA = num_ABA.astype(float)+0.6
-plt.hist(np.reshape(num_ABA, p**2), alpha=alpha, bins=bins, label='Markhov')
+plt.hist(np.reshape(num_ABA, p**2), alpha=alpha, bins=bins, label='Markov')
 plt.legend()
 plt.yscale('log')
 plt.xlabel('Number of ABA transitions')
