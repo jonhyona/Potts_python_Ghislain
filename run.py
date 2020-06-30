@@ -207,12 +207,12 @@ file_handling.save_dynamics(cue, (transition_time, lamb, just_next_saved,
                                   max2_m_mu_saved),
                             key)
 
-file_handling.save_evolution(cue, m_mu_plot, key)
+file_handling.save_evolution(cue, kick_seed, m_mu_plot, key)
 
-file_handling.save_metrics(cue, d12, duration, key)
+file_handling.save_metrics(cue, kick_seed, d12, duration, key)
 
 # file_handling.save_coactivation(cue, coactivation, key)
 # file_handling.save_covariance(cue, covariance, key)
 
-file_handling.save_coact_pos(cue, coact_pos, key)
-file_handling.save_coact_neg(cue, coact_neg, key)
+file_handling.save_coact_pos(cue, kick_seed, coact_pos, key)
+file_handling.save_coact_neg(cue, kick_seed, coact_neg, key)
