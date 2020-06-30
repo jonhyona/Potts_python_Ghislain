@@ -201,11 +201,13 @@ for iT in tqdm(range(nT)):
 d12 = eta*d12
 
 
-file_handling.save_dynamics(cue, (transition_time, lamb, just_next_saved,
-                                  retrieved_saved, previously_retrieved_saved,
-                                  outsider_saved, max_m_mu_saved,
-                                  max2_m_mu_saved),
-                            key)
+file_handling.save_dynamics(cue, kick_seed, (transition_time, lamb,
+                                             just_next_saved,
+                                             retrieved_saved,
+                                             previously_retrieved_saved,
+                                             outsider_saved,
+                                             max_m_mu_saved,
+                                             max2_m_mu_saved), key)
 
 file_handling.save_evolution(cue, kick_seed, m_mu_plot, key)
 

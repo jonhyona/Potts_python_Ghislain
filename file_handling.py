@@ -191,11 +191,12 @@ retrieved_pattern..."""
     return tmp[item].astype(dtype)
 
 
-def load_full_dynamics(item, dtype, key):
+def load_full_dynamics(item, dtype, key, kick_seed):
     """Load dynamics from all cues"""
     res = []
     for cue in range(p):
-        res.append((load_cue_dynamics(cue, item, dtype, key).tolist()))
+        res.append((load_cue_dynamics(cue, kick_seed, item, dtype,
+                                      key).tolist()))
     return res
 
 
@@ -232,8 +233,8 @@ def load_parameters(key):
     return load_data(key+'/parameters.pkl')
 
 
-def load_retrieved(key):
-    return load_full_dynamics(3, int, key)
+def load_retrieved(key, kick_seed):
+    return load_full_dynamics(3, int, key, kick_seed)
 
 
 def load_previously_retrieved(key):
