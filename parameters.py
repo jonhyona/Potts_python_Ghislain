@@ -8,7 +8,7 @@ from and their behavior
 # Integration
 dt = 1.                         # Time-step
 tSim = 1e5                      # Number of runs
-nSnap = min(int(tSim/dt), 10)    # Resampling to plot time-evolution
+nSnap = min(int(tSim/dt), 10000)    # Resampling to plot time-evolution
 
 # Network
 
@@ -54,7 +54,7 @@ n_p = 1                         # Number of cues
 
 # Introduce variability across simulations kick to some random
 # among the pattern
-muted_prop = 0.9
+muted_prop = 0.8
 kick_seed = 1
 
 random_seed = 2021

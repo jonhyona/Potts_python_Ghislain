@@ -5,7 +5,7 @@ import sys
 # Local modules
 from parameters import dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, \
     f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, \
-    t_0, g, random_seed, p_0, n_p, nSnap, russo2008_mode
+    t_0, g, random_seed, p_0, n_p, nSnap, russo2008_mode, muted_prop
 import initialisation
 import file_handling
 import patterns
@@ -42,7 +42,7 @@ param = (dt, tSim, N, S, p, num_fact, p_fact,
          f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A,
          tau_3_B, g_A,
          beta, tau, t_0, g, random_seed, p_0, n_p, nSnap,
-         russo2008_mode)
+         russo2008_mode, muted_prop)
 
 key = file_handling.get_key(param)
 

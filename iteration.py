@@ -85,7 +85,7 @@ def get_units_to_cue(cue_ind, seed, delta__ksi_i_mu__k, muted_prop):
     gen.shuffle(deck)
     muted = deck[:int(N*a*muted_prop)]
     active = delta__ksi_i_mu__k[:, cue_ind] > 0.5
-    print(active.shape)
+    # print(active.shape)
     muted_index = np.array(range(S*N))[active]
     muted_index[muted] = 0
     cue_mask = delta__ksi_i_mu__k[:, cue_ind].copy()

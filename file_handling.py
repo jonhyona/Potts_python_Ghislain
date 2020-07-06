@@ -160,32 +160,50 @@ def save_max2_m_mu(cue, kick_seed, max2_m_mu_saved, key):
     save_tran_prop(cue, kick_seed, max2_m_mu_saved, 'max2_m_mu', key)
 
 
+def load_cue_trans_prop(cue, kick_seed, item, dtype, key):
+    """Load dynamics corresponding to one particular cue and one
+particular item (ether transition times, or overlaps, or
+retrieved_pattern..."""
+    # print(cue)
+    tmp = load_text(key+'/'+item+'_cue_%d_kickseed_%d.txt' % (cue, kick_seed))
+    # print(item, key)
+    if len(tmp.shape) == 1:
+        if (tmp.shape)[0] == 0:
+            return np.array([]).astype(dtype)
+    return tmp.astype(dtype)
+
+
+def load_full_trans_prop(item, dtype, key, kick_seed):
+    """Load dynamics from all cues"""
+    res = []
+    for cue in range(p):
+        res.append((load_cue_trans_prop(cue, kick_seed, item, dtype,
+                                        key).tolist()))
+    return res
+
+
 def load_mean_coactivation(coactivation, key):
     load_text(key+'/coactivation_mean.txt', coactivation)
 
 
-def load_tran_prop(cue, kick_seed, data, item, key):
-    save_text(key+'/'+item+'_cue_%d_kickseed_%d.txt' % (cue, kick_seed), data)
+def load_transition_time(kick_seed, key):
+    return load_full_trans_prop('transition_time', float, key, kick_seed)
 
 
-def load_transition_time(cue, kick_seed, transition_time, key):
-    load_tran_prop(cue, kick_seed, 'transition_time', key)
+def load_crossover(kick_seed, key):
+    return load_full_trans_prop('crossover', float, key, kick_seed)
 
 
-def load_crossover(cue, kick_seed, lamb, key):
-    load_tran_prop(cue, kick_seed, 'crossover', key)
+def load_retrieved(kick_seed, key):
+    return load_full_trans_prop('retrieved', int, key, kick_seed)
 
 
-def load_retrieved(cue, kick_seed, retrieved_saved, key):
-    load_tran_prop(cue, kick_seed, 'retrieved', key)
+def load_max_m_mu(kick_seed, key):
+    return load_full_trans_prop('max_m_mu', float, key, kick_seed)
 
 
-def load_max_m_mu(cue, kick_seed, max_m_mu_saved, key):
-    load_tran_prop(cue, kick_seed, 'max_m_mu', key)
-
-
-def load_max2_m_mu(cue, kick_seed, max2_m_mu_saved, key):
-    load_tran_prop(cue, kick_seed, 'max2_m_mu', key)
+def load_max2_m_mu(kick_seed, key):
+    return load_full_trans_prop('max2_m_mu', float, key, kick_seed)
 
 
 def load_coactivation_mean(key):
@@ -222,29 +240,6 @@ def load_metrics(key):
     return d12_s, duration_s
 
 
-def load_cue_trans_prop(cue, kick_seed, item, dtype, key):
-    """Load dynamics corresponding to one particular cue and one
-particular item (ether transition times, or overlaps, or
-retrieved_pattern..."""
-    # print(cue)
-    tmp = load_text(key+'/'+item+'_cue_%d_kickseed_%d.txt' % (cue, kick_seed))
-    if len(tmp.shape) == 1:
-        if (tmp.shape)[0] == 0:
-            return np.array([]).astype(dtype)
-        else:
-            return np.array([tmp]).astype(dtype)
-    return tmp.astype(dtype)
-
-
-def load_full_trans_prop(item, dtype, key, kick_seed):
-    """Load dynamics from all cues"""
-    res = []
-    for cue in range(p):
-        res.append((load_cue_trans_prop(cue, kick_seed, item, dtype,
-                                        key).tolist()))
-    return res
-
-
 def load_evolution(cue, kick_seed, key):
     return load_text(key+'/evolution_cue_%d_kickseed_%d.txt' % (cue,
                                                                 kick_seed))
@@ -276,18 +271,6 @@ def load_data(file_name, stacked=False):
 
 def load_parameters(key):
     return load_data(key+'/parameters.pkl')
-
-
-def load_retrieved(key, kick_seed):
-    return load_full_dynamics(2, int, key, kick_seed)
-
-
-def load_crossover(key):
-    return load_full_dynamics(1, float, key)
-
-
-def load_transition_time(key):
-    return load_full_dynamics(0, int, key)
 
 
 def load_ryom_retrieved(file_name):
