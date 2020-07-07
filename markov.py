@@ -51,8 +51,9 @@ def random_eq(retrieved, n_seeds):
     shuffled_retrieved = copy.deepcopy(retrieved.copy())
     for kick_seed in range(n_seeds):
         for cue_ind in range(p):
-            random_retrieved[kick_seed][cue_ind] = list(rd.randint(0, p,
-                                                        len(retrieved[kick_seed][cue_ind])))
+            random_retrieved[kick_seed][cue_ind] = \
+                list(rd.randint(0, p,
+                                len(retrieved[kick_seed][cue_ind])))
             if retrieved[kick_seed][cue_ind] == cue_ind:
                 random_retrieved[kick_seed][cue_ind][0] = cue_ind
                 rd.shuffle(shuffled_retrieved[kick_seed][cue_ind][1:])
@@ -70,9 +71,8 @@ retrieved = file_handling.load_retrieved_several(key, n_seeds)
 random_retrieved, shuffled_retrieved = random_eq(retrieved, n_seeds)
 
 num_A, p_A, num_B, p_B, num_AB, p_AB, num_ABC, p_ABC, p_B_ABC, \
-        p_AB_ABC = prob_tools.trio_prob_table(retrieved, key)
+        p_AB_ABC = proba_tools.trio_prob_table(retrieved, key)
 
->>>>>>> stochastic_cueing
 proba_table = np.zeros((p, p))
 occuring_A = num_A != 0
 proba_table[occuring_A, :] = num_AB[occuring_A, :] / num_A[occuring_A, None]
@@ -131,7 +131,6 @@ sns.distplot(plot_est, label='Latching', kde=kde, norm_hist=True, kde_kws=kde_kw
 sns.distplot(plot_est_markov, label='Markov', kde=kde, norm_hist=True, kde_kws=kde_kws)
 plt.xlabel('p(ABC)p(B) - p(AB)p(BC)')
 plt.ylabel('Number of trios ABC (with order)')
->>>>>>> stochastic_cueing
 plt.legend()
 plt.yscale('log')
 
