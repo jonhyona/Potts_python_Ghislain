@@ -8,7 +8,7 @@ from and their behavior
 # Integration
 dt = 1.                         # Time-step
 tSim = 1e5                      # Number of runs
-nSnap = min(int(tSim/dt), 10)    # Resampling to plot time-evolution
+nSnap = min(int(tSim/dt), 10000)    # Resampling to plot time-evolution
 
 # Network
 
@@ -51,6 +51,11 @@ g = 5.                          # Cue strengh
 cue_ind = 1                     # Default pattern to cue
 p_0 = 0                         # First cue, useless if cue as a parameter
 n_p = 1                         # Number of cues
+
+# Introduce variability across simulations kick to some random
+# among the pattern
+muted_prop = 0.8
+kick_seed = 1
 
 random_seed = 2021
 # The model changed a bit after Russo2008 see h funtion in iteration.py

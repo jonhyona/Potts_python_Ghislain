@@ -75,53 +75,142 @@ def load_network(key):
         return pickle.load(f)
 
 
-def save_dynamics(cue, dynamics, key):
-    """ Save dynamics obtained by run.py : transition time, overlap...."""
-    save_text(key+'/dynamics_cue_%d.txt' % cue, dynamics)
+def save_evolution(cue, kick_seed, m_mu_plot, key):
+    save_text(key+'/evolution_cue_%d_kickseed_%d.txt' % (cue,
+                                                         kick_seed),
+              m_mu_plot)
 
 
-def save_evolution(cue, m_mu_plot, key):
-    save_text(key+'/evolution_cue_%d.txt' % cue, m_mu_plot)
+def save_metrics(cue, kick_seed, d12, duration, key):
+    save_text(key+'/metrics_cue_%d_kickseed_%d.txt' % (cue,
+                                                       kick_seed),
+              [d12,
+               duration])
 
 
-def save_metrics(cue, d12, duration, key):
-    save_text(key+'/metrics_cue_%d.txt' % cue, [d12, duration])
+def save_coactivation(cue, kick_seed, coactivation, key):
+    save_text(key+'/coactivation_cue_%d_kickseed_%d.txt' % (cue,
+                                                            kick_seed),
+              coactivation)
 
 
-def save_coactivation(cue, coactivation, key):
-    save_text(key+'/coactivation_cue_%d.txt' % cue, coactivation)
+def load_coactivation(cue, kick_seed, key):
+    return load_text(key+'/coactivation_cue_%d_kickseed_%d.txt' %
+                     (cue, kick_seed))
 
 
-def load_coactivation(cue, key):
-    return load_text(key+'/coactivation_cue_%d.txt' % cue)
+def save_covariance(cue, kick_seed, covariance, key):
+    save_text(key+'/covariance_cue_%d_kickseed_%d.txt' % (cue,
+                                                          kick_seed),
+              covariance)
 
 
-def save_covariance(cue, covariance, key):
-    save_text(key+'/covariance_cue_%d.txt' % cue, covariance)
+def load_covariance(cue, kick_seed, key):
+    return load_text(key+'/covariance_cue_%d_kickseed_%d.txt' % (cue,
+                                                                 kick_seed))
 
 
-def load_covariance(cue, key):
-    return load_text(key+'/covariance_cue_%d.txt' % cue)
+def save_coact_pos(cue, kick_seed, coact_pos, key):
+    save_text(key+'/coact_pos_cue_%d_kickseed_%d.txt' % (cue,
+                                                         kick_seed),
+              coact_pos)
 
 
-def save_coact_pos(cue, coact_pos, key):
-    save_text(key+'/coact_pos_cue_%d.txt' % cue, coact_pos)
+def load_coact_pos(cue, kick_seed, key):
+    return load_text(key+'/coact_pos_cue_%d_kickseed_%d.txt' % (cue,
+                                                                kick_seed))
 
 
-def load_coact_pos(cue, key):
-    return load_text(key+'/coact_pos_cue_%d.txt' % cue)
+def save_coact_neg(cue, kick_seed, coact_neg, key):
+    save_text(key+'/coact_neg_cue_%d_kickseed_%d.txt' % (cue,
+                                                         kick_seed),
+              coact_neg)
 
 
-def save_coact_neg(cue, coact_neg, key):
-    save_text(key+'/coact_neg_cue_%d.txt' % cue, coact_neg)
-
-
-def load_coact_neg(cue, key):
-    return load_text(key+'/coact_neg_cue_%d.txt' % cue)
+def load_coact_neg(cue, kick_seed, key):
+    return load_text(key+'/coact_neg_cue_%d_kickseed_%d.txt' % (cue,
+                                                                kick_seed))
 
 
 def save_mean_coactivation(coactivation, key):
     save_text(key+'/coactivation_mean.txt', coactivation)
+
+
+def save_tran_prop(cue, kick_seed, data, item, key):
+    save_text(key+'/'+item+'_cue_%d_kickseed_%d.txt' % (cue, kick_seed), data)
+
+
+def save_transition_time(cue, kick_seed, transition_time, key):
+    save_tran_prop(cue, kick_seed, transition_time, 'transition_time', key)
+
+
+def save_crossover(cue, kick_seed, lamb, key):
+    save_tran_prop(cue, kick_seed, lamb, 'crossover', key)
+
+
+def save_retrieved(cue, kick_seed, retrieved_saved, key):
+    save_tran_prop(cue, kick_seed, retrieved_saved, 'retrieved', key)
+
+
+def save_max_m_mu(cue, kick_seed, max_m_mu_saved, key):
+    save_tran_prop(cue, kick_seed, max_m_mu_saved, 'max_m_mu', key)
+
+
+def save_max2_m_mu(cue, kick_seed, max2_m_mu_saved, key):
+    save_tran_prop(cue, kick_seed, max2_m_mu_saved, 'max2_m_mu', key)
+
+
+def load_cue_trans_prop(cue, kick_seed, item, dtype, key):
+    """Load dynamics corresponding to one particular cue and one
+particular item (ether transition times, or overlaps, or
+retrieved_pattern..."""
+    # print(cue)
+    tmp = load_text(key+'/'+item+'_cue_%d_kickseed_%d.txt' % (cue, kick_seed))
+    # print(item, key)
+    if len(tmp.shape) == 1:
+        if (tmp.shape)[0] == 0:
+            return np.array([]).astype(dtype)
+    return tmp.astype(dtype)
+
+
+def load_full_trans_prop(item, dtype, key, kick_seed):
+    """Load dynamics from all cues"""
+    res = []
+    for cue in range(p):
+        res.append((load_cue_trans_prop(cue, kick_seed, item, dtype,
+                                        key).tolist()))
+    return res
+
+
+def load_mean_coactivation(coactivation, key):
+    load_text(key+'/coactivation_mean.txt', coactivation)
+
+
+def load_transition_time(kick_seed, key):
+    return load_full_trans_prop('transition_time', float, key, kick_seed)
+
+
+def load_crossover(kick_seed, key):
+    return load_full_trans_prop('crossover', float, key, kick_seed)
+
+
+def load_retrieved(kick_seed, key):
+    return load_full_trans_prop('retrieved', int, key, kick_seed)
+
+
+def load_retrieved_several(n_seeds, key):
+    res = [[] for kick_seed in range(n_seeds)]
+    for kick_seed in range(n_seeds):
+        res[kick_seed] = load_retrieved(kick_seed, key)
+    return res
+
+
+def load_max_m_mu(kick_seed, key):
+    return load_full_trans_prop('max_m_mu', float, key, kick_seed)
+
+
+def load_max2_m_mu(kick_seed, key):
+    return load_full_trans_prop('max2_m_mu', float, key, kick_seed)
 
 
 def load_coactivation_mean(key):
@@ -152,36 +241,15 @@ def load_metrics(key):
     d12_s = np.zeros(p)
     duration_s = d12_s.copy()
     for ind_cue in range(p):
-        tmp = load_text(key+'/metrics_cue_%d.txt' % ind_cue)
+        tmp = load_text(key+'/metrics_cue_%d_kickseed_%d.txt' % ind_cue)
         d12_s[ind_cue] = tmp[0]
         duration_s[ind_cue] = tmp[1]
     return d12_s, duration_s
 
 
-def load_cue_dynamics(cue, item, dtype, key):
-    """Load dynamics corresponding to one particular cue and one
-particular item (ether transition times, or overlaps, or
-retrieved_pattern..."""
-    # print(cue)
-    tmp = load_text(key+'/dynamics_cue_%d.txt' % cue)
-    if len(tmp.shape) == 1:
-        if (tmp.shape)[0] == 0:
-            return np.array([]).astype(dtype)
-        else:
-            return np.array([tmp[item]]).astype(dtype)
-    return tmp[item].astype(dtype)
-
-
-def load_full_dynamics(item, dtype, key):
-    """Load dynamics from all cues"""
-    res = []
-    for cue in range(p):
-        res.append((load_cue_dynamics(cue, item, dtype, key).tolist()))
-    return res
-
-
-def load_evolution(cue, key):
-    return load_text(key+'/evolution_cue_%d.txt' % cue)
+def load_evolution(cue, kick_seed, key):
+    return load_text(key+'/evolution_cue_%d_kickseed_%d.txt' % (cue,
+                                                                kick_seed))
 
 
 def record_parameters(key):
@@ -210,22 +278,6 @@ def load_data(file_name, stacked=False):
 
 def load_parameters(key):
     return load_data(key+'/parameters.pkl')
-
-
-def load_retrieved(key):
-    return load_full_dynamics(3, int, key)
-
-
-def load_previously_retrieved(key):
-    return load_full_dynamics(4, int, key)
-
-
-def load_overlap(key):
-    return load_full_dynamics(1, float, key)
-
-
-def load_transition_time(key):
-    return load_full_dynamics(0, int, key)
 
 
 def load_ryom_retrieved(file_name):

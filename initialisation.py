@@ -62,7 +62,7 @@ def hebbian_tensor(delta__ksi_i_mu__k, random_seed):
     return spsp.bsr_matrix(J_i_j_k_l, blocksize=(S, S)), mask
 
 
-def network(J_i_j_k_l, delta__ksi_i_mu__k, g_A, w):
+def network(J_i_j_k_l, delta__ksi_i_mu__k, g_A, w, cue_mask):
     """
     Initializing the network in stationnary-rest-state
 
@@ -132,7 +132,7 @@ def network(J_i_j_k_l, delta__ksi_i_mu__k, g_A, w):
     theta_i_k[:] = sig_i_k[active]
 
     iteration.h_i_k_fun(h_i_k, J_i_j_k_l, sig_i_k, delta__ksi_i_mu__k, 0,
-                        0, t_0, w)
+                        0, t_0, w, cue_mask)
     r_i_k[active] = h_i_k
     r_i_S_A = g_A * (1 - sig_i_k[inactive])
     r_i_S_B = (1 - g_A) * (1 - sig_i_k[inactive])

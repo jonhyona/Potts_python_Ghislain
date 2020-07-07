@@ -10,6 +10,7 @@ from statistics import median
 
 plt.ion()
 plt.close('all')
+n_seeds = 11
 
 def mutual_information(var1_realisations, var2_realisations, p):
     bins1 = np.arange(-0.5, p+.5, 1)
@@ -50,6 +51,8 @@ simulations = ['139a320d8afab59bcb18d59268071d94',
                '5e73e76d56736d4451d7b13026e9a22d',
                '72faca25053502fca9ddb571c0bdda2e',
                '7563cf938338f46c3ba9a44c6d891601'] # Correlations analysis
+simulations = ['f30d8a2438252005f6a9190c239c01c1', 'eaa46e6420179b9fca55424427aa766f']
+n_seeds = [11, 3]
 
 color_s = ['blue', 'orange', 'green', 'red', 'peru', 'red', 'red', 'red', 'red', 'red']
 
@@ -62,7 +65,7 @@ ymax = 2**3
          f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A,
          tau_3_B, g_A,
          beta, tau, t_0, g, random_seed, p_0, n_p, nSnap,
-         russo2008_mode) = file_handling.load_parameters(simulations[0])
+         russo2008_mode, muted_prop) = file_handling.load_parameters(simulations[0])
 min_t = min(tau_1, tau_2, tau_3_A, tau_3_B)
 
 
@@ -84,29 +87,30 @@ def get_mi(retrieved_saved, number_limiter):
         auto_corr = 0
         auto_corr_shuff = 0
 
-        for cue_ind in range(p):
-            if len(retrieved_saved[cue_ind]) >= 3 + m_max:
-                # print(len(retrieved_saved[cue_ind]))
-                sequence = []
-                if cue_ind != retrieved_saved[cue_ind][0]:
-                    sequence.append(cue_ind)
-                sequence += retrieved_saved[cue_ind]
+        for kick_seed in range(len(retrieved_saved)):
+            for cue_ind in range(p):
+                if len(retrieved_saved[kick_seed][cue_ind]) >= 3 + m_max:
+                    # print(len(retrieved_saved[kicked_seed][cue_ind]))
+                    sequence = []
+                    if cue_ind != retrieved_saved[kick_seed][cue_ind][0]:
+                        sequence.append(cue_ind)
+                    sequence += retrieved_saved[kick_seed][cue_ind]
 
-                end = len(sequence)
-                ind_cut_0 = 3
-                ind_cut_1 = end - m_max
-                ind_shifted_0 = m+3
-                ind_shifted_1 = end - (m_max-m)
-                seq_cut += sequence[ind_cut_0: ind_cut_1]
-                seq_shifted += sequence[ind_shifted_0: ind_shifted_1]
-                sub_seq_cut = np.array(sequence[ind_cut_0: ind_cut_1])
-                sub_seq_shifted = np.array(sequence[ind_shifted_0:
-                                                    ind_shifted_1])
-                auto_corr += np.sum(sub_seq_cut == sub_seq_shifted)
+                    end = len(sequence)
+                    ind_cut_0 = 3
+                    ind_cut_1 = end - m_max
+                    ind_shifted_0 = m+3
+                    ind_shifted_1 = end - (m_max-m)
+                    seq_cut += sequence[ind_cut_0: ind_cut_1]
+                    seq_shifted += sequence[ind_shifted_0: ind_shifted_1]
+                    sub_seq_cut = np.array(sequence[ind_cut_0: ind_cut_1])
+                    sub_seq_shifted = np.array(sequence[ind_shifted_0:
+                                                        ind_shifted_1])
+                    auto_corr += np.sum(sub_seq_cut == sub_seq_shifted)
 
-                sub_seq_shuff = sub_seq_cut.copy()
-                rd.shuffle(sub_seq_shuff)
-                auto_corr_shuff += np.sum(sub_seq_cut == sub_seq_shuff)
+                    sub_seq_shuff = sub_seq_cut.copy()
+                    rd.shuffle(sub_seq_shuff)
+                    auto_corr_shuff += np.sum(sub_seq_cut == sub_seq_shuff)
         if seq_cut == []:
             break
         seq_cut = np.array(seq_cut)
@@ -159,7 +163,8 @@ def plot_information_flow(simulation_list):
          beta, tau, t_0, g, random_seed, p_0, n_p, nSnap,
          russo2008_mode) = file_handling.load_parameters(simulation_key)
 
-        retrieved_saved = file_handling.load_retrieved(simulation_key)
+        retrieved_saved = \
+            file_handling.load_retrieved_several(n_seeds[ind_key], simulation_key)
         m_saved, mi_saved, control, shuffled = get_mi(retrieved_saved,
                                                       retrieved_saved)
 
@@ -172,7 +177,7 @@ def plot_information_flow(simulation_list):
                  color=color_s[ind_key], label=r'$g_A$=%.1f, $w$=%.1f'
                  % (g_A, w))
         plt.plot(m_saved, shuffled, ':', color=color_s[ind_key], label='bias')
-        plt.yscale('log', basey=10)
+        # plt.yscale('log', basey=10)
         plt.ylim([ymin, ymax])
         plt.xlabel(r'Shift $\Delta n$')
         plt.legend(loc='upper right')
@@ -379,9 +384,9 @@ def plot_information_flow_apf(simulation_list):
          f_russo, cm, a, U, w, tau_1, tau_2, tau_3_A,
          tau_3_B, g_A,
          beta, tau, t_0, g, random_seed, p_0, n_p, nSnap,
-         russo2008_mode) = file_handling.load_parameters(simulation_key)
+         russo2008_mode, muted_prop) = file_handling.load_parameters(simulation_key)
 
-        retrieved_saved = file_handling.load_retrieved(simulation_key)
+        retrieved_saved = file_handling.load_retrieved_several(n_seeds[ind_key], simulation_key)
         m_saved, mi_saved, control, shuffled, auto_corr, auto_corr_shuff = \
             get_mi(retrieved_saved, retrieved_saved)
         auto_corr[1] = 0
