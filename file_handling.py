@@ -198,6 +198,13 @@ def load_retrieved(kick_seed, key):
     return load_full_trans_prop('retrieved', int, key, kick_seed)
 
 
+def load_retrieved_several(n_seeds, key):
+    res = [[] for kick_seed in range(n_seeds)]
+    for kick_seed in range(n_seeds):
+        res[kick_seed] = load_retrieved(kick_seed, key)
+    return res
+
+
 def load_max_m_mu(kick_seed, key):
     return load_full_trans_prop('max_m_mu', float, key, kick_seed)
 
