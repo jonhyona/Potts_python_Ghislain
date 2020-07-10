@@ -67,72 +67,37 @@ def build_trans_tables(retrieved, key, L):
          file_handling.load_parameters(key)
 
     n_seeds = len(retrieved)
-    tables = [[] for order in range(L+1)]
+    num_tables = [[] for order in range(L+1)]
+    proba_tables = [[] for order in range(L+1)]
     print('Table creation')
-    for order in tqdm(range(L+1)):
+    for order in tqdm(range(L)):
         chain_length = order + 1
-        tables[order] = sparse.DOK(shape=tuple([p for ii in
-                                                range(chain_length)]))
-    print('Fill tables')
+        num_tables[order] = sparse.DOK(shape=tuple([p for ii in
+                                                    range(chain_length)]))
+    print('Fill num_tables')
     for kick_seed in tqdm(range(n_seeds)):
         for cue_ind in range(p):
             if len(retrieved[kick_seed][cue_ind]) >= 3:
                 # print(len(retrieved[kick_seed][cue_ind]))
                 sequence = []
-                sequence += retrieved[kick_seed][cue_ind]
-                sequence = sequence[3:]
-
-                for ind_trans in range(len(sequence)):
-                    for order in range(L+1):
-                        trans_string = sequence[ind_trans: ind_trans + L+1]
-                        if ind_trans + order + 1 <= len(sequence):
-                            string = trans_string[: order + 1]
-                            tables[order][tuple(string)] += 1
-    print('Table conversion')
-    for order in tqdm(range(L+1)):
-        tables[order] = sparse.COO(tables[order])
-        tables[order] = tables[order] / tables[order].sum()
-    return tables
-
-
-def len_chain_counter(length, retrieved, key):
-    (dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo,
-     cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0,
-     g, random_seed, p_0, n_p, nSnap, russo2008_mode, muted_prop) = \
-         file_handling.load_parameters(key)
-    n_seeds = len(retrieved)
-    cpt = 0
-    for kick_seed in range(n_seeds):
-        for ind_cue in range(p):
-            cpt += max(0, len(retrieved[kick_seed][ind_cue]) - length - 3)
-    return cpt
-
-
-def chain_occurences(chain, retrieved, key):
-    n_seeds = len(retrieved)
-    length = len(chain)
-
-    (dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo,
-     cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0,
-     g, random_seed, p_0, n_p, nSnap, russo2008_mode, muted_prop) = \
-         file_handling.load_parameters(key)
-
-    cpt = 0
-
-    for kick_seed in range(n_seeds):
-        for cue_ind in range(p):
-            if len(retrieved[kick_seed][cue_ind]) >= 3:
-                # print(len(retrieved[kick_seed][cue_ind]))
                 sequence = retrieved[kick_seed][cue_ind][3:]
-                cpt += sum(sequence[i:i+length] == chain
-                           for i in range(len(sequence)))
 
-    return cpt
+                for ind_trans in range(len(sequence)-L-1):
+                    trans_string = sequence[ind_trans: ind_trans + L+1]
+                    for order in range(L):
+                        string = trans_string[: order + 1]
+                        num_tables[order][tuple(string)] += 1
+    print('Table conversion')
+    for order in tqdm(range(L)):
+        num_tables[order] = sparse.COO(num_tables[order])
+        proba_tables[order] = num_tables[order] / num_tables[order].sum()
+    return num_tables, proba_tables
 
 
-def condi_prob(Z, chain, tables):
-    p_XYZ = tables[len(chain)][tuple(chain+[Z])]
-    p_XY = tables[len(chain)-1][tuple(chain)]
+def condi_prob(Z, XY, XYZ, proba_tables):
+    p_XYZ = proba_tables[len(XYZ)-1][tuple(XYZ)]
+    p_XY = proba_tables[len(XY)-1][tuple(XY)]
+    # print(p_XYZ, p_XY)
     if p_XY > 0:
         return p_XYZ/p_XY
     return np.nan

@@ -51,8 +51,21 @@ simulations = ['139a320d8afab59bcb18d59268071d94',
                '5e73e76d56736d4451d7b13026e9a22d',
                '72faca25053502fca9ddb571c0bdda2e',
                '7563cf938338f46c3ba9a44c6d891601'] # Correlations analysis
-simulations = ['f30d8a2438252005f6a9190c239c01c1', 'eaa46e6420179b9fca55424427aa766f']
-n_seeds = [11, 3]
+simulations = ['a2cc92e57feefe09afa4b7d522648850',
+               '4976deb7f31adf5cb35045c155e685f2',
+               '36d62cd50af2b2080ef7614f7de71bcc',
+               'ce85f499d736e31d016430fa81790e4b',
+               'b80b46e4edbef76108d00544e4e48ac6',
+               '9e0fbd728bd38ee6eb130d85f35faa9a',
+               '28945fb929cfadfac83ac968fd87657c',
+               '422c4b820382a768a82dd5f01323f1b0',
+               'c9895588c7fbdec9834afb14cfd35ef7',
+               '88265f28884c64d37dee8ba8dd2a3c7f',
+               '10f53b1d4ffe2cbcf47727b4e1f2ce2d',
+               '030d877df8f64e2fd916cab9b744a61c',
+               '4c9dc98928d92727c2076eff9c5bb987',
+               '119c9880d858cf55ff26a672dd3425e9']
+n_seeds = [1 for ii in range(len(simulations))]
 
 color_s = ['blue', 'orange', 'green', 'red', 'peru', 'red', 'red', 'red', 'red', 'red']
 
