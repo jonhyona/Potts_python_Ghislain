@@ -10,10 +10,9 @@ from tqdm import tqdm
 plt.ion()
 plt.close('all')
 
-simulations = ['b18e30bc89dbcb5bc2148fb9c6e0c51d']
-
+simulations = ['f30d8a2438252005f6a9190c239c01c1']
+n_seeds = 11
 alpha = 1
-n_seeds = 3
 key = simulations[0]
 
 (dt, tSim, N, S, p, num_fact, p_fact,
@@ -195,37 +194,37 @@ for ind_trans in range(len(invalid_transitions)):
 
 plt.scatter(C1, C0, color='r')
 
-cpt_valid = -1
-cpt_invalid = 0
-for ind in range(len(is_valid)):
-    if not is_valid[ind]:
-        pattA = invalid_transitions[cpt_invalid][0]
-        pattB = invalid_transitions[cpt_invalid][1]
-        pattC = valid_transitions[cpt_valid][1]
-        if pattA == pattC:
-            pattC = invalid_transitions[cpt_valid][0]
-        ksiA = ksi_i_mu[:, pattA]
-        ksiB = ksi_i_mu[:, pattB]
-        ksiC = ksi_i_mu[:, pattC]
-        CAC = np.sum(np.logical_and(ksiA == ksiC, 1-(ksiA == S)))
-        CBC = np.sum(np.logical_and(ksiB == ksiC, 1-(ksiB == S)))
-        print(pattA, pattB, pattC, CAC, CBC, np.abs(CAC - CBC))
-        cpt_invalid += 1
-    else:
-        cpt_valid += 1
+# cpt_valid = -1
+# cpt_invalid = 0
+# for ind in range(len(is_valid)):
+#     if not is_valid[ind]:
+#         pattA = invalid_transitions[cpt_invalid][0]
+#         pattB = invalid_transitions[cpt_invalid][1]
+#         pattC = valid_transitions[cpt_valid][1]
+#         if pattA == pattC:
+#             pattC = invalid_transitions[cpt_valid][0]
+#         ksiA = ksi_i_mu[:, pattA]
+#         ksiB = ksi_i_mu[:, pattB]
+#         ksiC = ksi_i_mu[:, pattC]
+#         CAC = np.sum(np.logical_and(ksiA == ksiC, 1-(ksiA == S)))
+#         CBC = np.sum(np.logical_and(ksiB == ksiC, 1-(ksiB == S)))
+#         print(pattA, pattB, pattC, CAC, CBC, np.abs(CAC - CBC))
+#         cpt_invalid += 1
+#     else:
+#         cpt_valid += 1
 
-for ind in range(len(valid_transitions)):
-    pattC = valid_transitions[ind][1]
-    for pattA in range(p):
-        if pattA != pattC:
-            for pattB in range(p):
-                if pattB not in (pattA, pattC):
-                    ksiA = ksi_i_mu[:, pattA]
-                    ksiB = ksi_i_mu[:, pattB]
-                    ksiC = ksi_i_mu[:, pattC]
-                    CAC = np.sum(np.logical_and(ksiA == ksiC, 1-(ksiA == S)))
-                    CBC = np.sum(np.logical_and(ksiB == ksiC, 1-(ksiB == S)))
-                    print(pattA, pattB, pattC, CAC, CBC, np.abs(CAC - CBC))
+# for ind in range(len(valid_transitions)):
+#     pattC = valid_transitions[ind][1]
+#     for pattA in range(p):
+#         if pattA != pattC:
+#             for pattB in range(p):
+#                 if pattB not in (pattA, pattC):
+#                     ksiA = ksi_i_mu[:, pattA]
+#                     ksiB = ksi_i_mu[:, pattB]
+#                     ksiC = ksi_i_mu[:, pattC]
+#                     CAC = np.sum(np.logical_and(ksiA == ksiC, 1-(ksiA == S)))
+#                     CBC = np.sum(np.logical_and(ksiB == ksiC, 1-(ksiB == S)))
+#                     print(pattA, pattB, pattC, CAC, CBC, np.abs(CAC - CBC))
                     
             
 # print(invalid_transitions)

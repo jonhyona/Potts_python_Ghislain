@@ -31,8 +31,9 @@ if os.environ.get('DISPLAY', '') == '':
 def active_same_state(ksi1, ksi2, normalized=True):
     """ Proportion of units active in the same state in both patterns"""
     if normalized:
-        return np.sum((ksi1 == ksi2)*(1-(ksi2 == S)), axis=0)/N/a
-    return np.sum((ksi1 == ksi2)*(1-(ksi2 == S)), axis=0)
+        return np.sum(np.logical_and(ksi1 == ksi2, ksi2 != S), axis=0) \
+            / N / a
+    return np.sum(np.logical_and(ksi1 == ksi2, ksi2 != S), axis=0)
 
 
 def active_diff_state(ksi1, ksi2, normalized=True):

@@ -67,6 +67,17 @@ def save_network(ksi_i_mu, delta__ksi_i_mu__k, J_i_j_k_l, C_i_j, key):
         pickle.dump((ksi_i_mu, delta__ksi_i_mu__k, J_i_j_k_l, C_i_j), f)
 
 
+def save_activation(cue, kick_seed, sig_i_k, key):
+    save_text(key+'/activation_cue_%d_kickseed_%d.txt' % (cue,
+                                                          kick_seed),
+              sig_i_k)
+
+
+def load_activation_cue(cue, kick_seed, key):
+    return load_text(key+'/activation_cue_%d_kickseed_%d.txt' % (cue,
+                                                                 kick_seed))
+
+
 def load_network(key):
     """ Loads the network"""
     if not network_exists(key):
@@ -79,6 +90,25 @@ def save_evolution(cue, kick_seed, m_mu_plot, key):
     save_text(key+'/evolution_cue_%d_kickseed_%d.txt' % (cue,
                                                          kick_seed),
               m_mu_plot)
+
+
+def save_time(cue, kick_seed, t_plot, key):
+    save_text(key+'/time_cue_%d_kickseed_%d.txt' % (cue, kick_seed),
+              t_plot)
+
+
+def load_time(kick_seed, key):
+    return load_full_trans_prop('time', float, key, kick_seed)
+
+
+def load_time_cue(cue, kick_seed, key):
+    return load_text(key+'/time_cue_%d_kickseed_%d.txt' % (cue, kick_seed))
+
+
+def save_two_first(cue, kick_seed, two_first, key):
+    save_text(key+'/two_first_cue_%d_kickseed_%d.txt' % (cue,
+                                                         kick_seed),
+              two_first)
 
 
 def save_metrics(cue, kick_seed, d12, duration, key):
@@ -144,6 +174,10 @@ def save_transition_time(cue, kick_seed, transition_time, key):
     save_tran_prop(cue, kick_seed, transition_time, 'transition_time', key)
 
 
+def save_simult_ret(cue, kick_seed, simult_ret, key):
+    save_tran_prop(cue, kick_seed, simult_ret, 'simult_ret', key)
+
+
 def save_crossover(cue, kick_seed, lamb, key):
     save_tran_prop(cue, kick_seed, lamb, 'crossover', key)
 
@@ -190,12 +224,31 @@ def load_transition_time(kick_seed, key):
     return load_full_trans_prop('transition_time', float, key, kick_seed)
 
 
+def load_simult_ret(kick_seed, key):
+    return load_full_trans_prop('simult_ret', tuple, key, kick_seed)
+
+
+def load_block_time(kick_seed, key):
+    return load_full_trans_prop('block_time', float, key, kick_seed)
+
+
 def load_crossover(kick_seed, key):
     return load_full_trans_prop('crossover', float, key, kick_seed)
 
 
+def load_crossover_several(n_seeds, key):
+    res = [[] for kick_seed in range(n_seeds)]
+    for kick_seed in range(n_seeds):
+        res[kick_seed] = load_crossover(kick_seed, key)
+    return res
+
+
 def load_retrieved(kick_seed, key):
     return load_full_trans_prop('retrieved', int, key, kick_seed)
+
+
+def load_overlap(kick_seed, key):
+    return load_full_trans_prop('retrieved', float, key, kick_seed)
 
 
 def load_retrieved_several(n_seeds, key):
@@ -249,6 +302,11 @@ def load_metrics(key):
 
 def load_evolution(cue, kick_seed, key):
     return load_text(key+'/evolution_cue_%d_kickseed_%d.txt' % (cue,
+                                                                kick_seed))
+
+
+def load_two_first(cue, kick_seed, key):
+    return load_text(key+'/two_first_cue_%d_kickseed_%d.txt' % (cue,
                                                                 kick_seed))
 
 

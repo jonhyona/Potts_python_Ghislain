@@ -8,7 +8,7 @@ from and their behavior
 # Integration
 dt = 1.                         # Time-step
 tSim = 1e5                      # Number of runs
-nSnap = min(int(tSim/dt), 10000)    # Resampling to plot time-evolution
+nSnap = min(int(tSim/dt), 1000)    # Resampling to plot time-evolution
 
 # Network
 

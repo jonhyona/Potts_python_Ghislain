@@ -82,7 +82,7 @@ transition_time = []
 retrieved_saved = []
 max_m_mu_saved = []             # Maximal overlap
 max2_m_mu_saved = []            # Second max overlap
-
+simult_ret = []
 # Outsider is the pattern with second highest overlap
 outsider_saved = []
 
@@ -99,9 +99,11 @@ r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
     = initialisation.network(J_i_j_k_l, delta__ksi_i_mu__k, g_A, w, cue_mask)
 
 r_i_k_plot = np.zeros((nSnap, N*(S+1)))
-m_mu_plot = np.zeros((nSnap, 2))
+m_mu_plot = np.zeros((nSnap, p))
 theta_i_k_plot = np.zeros((nSnap, N*S))
 sig_i_k_plot = np.zeros((nSnap, N*(S+1)))
+two_first_plot = np.zeros((nSnap, 2), dtype=int)
+t_plot = np.zeros(nSnap)
 
 previously_retrieved = -1
 waiting_validation = False
@@ -128,12 +130,12 @@ for iT in tqdm(range(nT)):
     # Saving data for plots
 
     # if tS[iT] > t_0+tau_1:
-        # print((np.outer(m_mu, m_mu)).shape)
-    coact = np.outer(m_mu, m_mu)
-    tmp_ind = coact > coact_pos
-    coact_pos[tmp_ind] = coact[tmp_ind]
-    tmp_ind = coact < coact_neg
-    coact_neg[tmp_ind] = coact[tmp_ind]
+    # print((np.outer(m_mu, m_mu)).shape)
+    # coact = np.outer(m_mu, m_mu)
+    # tmp_ind = coact > coact_pos
+    # coact_pos[tmp_ind] = coact[tmp_ind]
+    # tmp_ind = coact < coact_neg
+    # coact_neg[tmp_ind] = coact[tmp_ind]
 
     duration = tS[iT]-t_0
     retrieved_pattern = np.argmax(m_mu)
@@ -146,39 +148,35 @@ for iT in tqdm(range(nT)):
 
     if tS[iT] >= tSnap[i_snap]:
         r_i_k_plot[i_snap, :] = r_i_k
-        m_mu_plot[i_snap, 0] = max_m_mu
-        m_mu_plot[i_snap, 1] = max2_m_mu
+        # m_mu_plot[i_snap, 0] = max_m_mu
+        # m_mu_plot[i_snap, 1] = max2_m_mu
+        m_mu_plot[i_snap, :] = m_mu
         sig_i_k_plot[i_snap, :] = sig_i_k
         theta_i_k_plot[i_snap, :] = theta_i_k
+        two_first_plot[i_snap, 0] = retrieved_pattern
+        two_first_plot[i_snap, 1] = outsider
+        t_plot[i_snap] = tS[iT]
         i_snap += 1
 
-    # # The transition detection should be adapted. It is simpler
-    # # and as efficient in the C code
-    # if retrieved_pattern != previously_retrieved \
-    #    and not waiting_validation:
-    #     tmp = [tS[iT], max_m_mu, retrieved_pattern,
-    #            previously_retrieved, outsider, max_m_mu, max2_m_mu]
-    #     waiting_validation = True
-    #     previous_idle = True
-    #     new_reached_threshold = False
-    # # Transitions are validated only if previous patterns dies
-    # if waiting_validation and not previous_idle \
-    #    and m_mu[tmp[2]] < 0.1:
-    #     previous_idle = True
-    # # Transitions are validated only if the pattern reaches an overlap
-    # # of 0.5. This avoid to record low-crossover transitions when
-    # # latching dies
-    # if waiting_validation and not new_reached_threshold \
-    #    and max_m_mu > .5:
-    #     new_reached_threshold = True
-    # if waiting_validation and previous_idle \
-    #    and new_reached_threshold:
+    if retrieved_pattern != previously_retrieved and not waiting_validation:
+        waiting_validation = True
+        was_blocked = False
+        crossover = max_m_mu
+        trans_t = tS[iT]
+        t0 = tS[iT]
+
+    if waiting_validation and max_m_mu < crossover:
+        crossover = max_m_mu
+        trans_t = tS[iT]
+
     if retrieved_pattern != previously_retrieved and max_m_mu > 0.5 \
        and max_m_mu - max2_m_mu > 0.2:
         waiting_validation = False
+        was_blocked = False
         eta = True
-        transition_time.append(tS[iT])
-        lamb.append(max2_m_mu)
+        t1 = tS[iT]
+        transition_time.append(trans_t)
+        lamb.append(crossover)
         retrieved_saved.append(retrieved_pattern)
         max_m_mu_saved.append(max_m_mu)
         max2_m_mu_saved.append(max2_m_mu)
@@ -187,6 +185,27 @@ for iT in tqdm(range(nT)):
         cpt_idle = 0
         eta = True
         previously_retrieved = retrieved_pattern
+        last_blocker = outsider
+        last_blocked = retrieved_pattern
+        previously_retrieved = retrieved_pattern
+
+    if was_blocked:
+        blocked = retrieved_pattern
+        blocker = outsider
+        if blocker != last_blocker or blocked != last_blocked:
+            # print("Blocked")
+            # print(blocked, last_blocked, blocker, last_blocker)
+            t1 = tS[iT]
+            simult_ret.append((last_blocked, last_blocker, tS[iT], t1-t0))
+
+    is_blocked = waiting_validation and max_m_mu > 0.5 \
+        and max_m_mu - max2_m_mu <= 0.2
+
+    if is_blocked:
+        last_blocked = retrieved_pattern
+        last_blocker = outsider
+
+    was_blocked = is_blocked
 
     if tS[iT] > t_0+tau_1:
         # Check that the network asn't fallen into its rest state
@@ -205,9 +224,15 @@ file_handling.save_crossover(cue, kick_seed, lamb, key)
 file_handling.save_retrieved(cue, kick_seed, retrieved_saved, key)
 file_handling.save_max_m_mu(cue, kick_seed, max_m_mu_saved, key)
 file_handling.save_max2_m_mu(cue, kick_seed, max2_m_mu_saved, key)
+file_handling.save_simult_ret(cue, kick_seed, simult_ret, key)
 
 file_handling.save_evolution(cue, kick_seed, m_mu_plot, key)
+file_handling.save_time(cue, kick_seed, t_plot, key)
+file_handling.save_two_first(cue, kick_seed, two_first_plot, key)
 file_handling.save_metrics(cue, kick_seed, d12, duration, key)
 
-file_handling.save_coact_pos(cue, kick_seed, coact_pos, key)
-file_handling.save_coact_neg(cue, kick_seed, coact_neg, key)
+# if cue == 0:
+#     file_handling.save_activation(cue, kick_seed, sig_i_k_plot, key)
+
+# file_handling.save_coact_pos(cue, kick_seed, coact_pos, key)
+# file_handling.save_coact_neg(cue, kick_seed, coact_neg, key)
