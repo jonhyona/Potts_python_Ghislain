@@ -108,25 +108,25 @@ def detect_simultaneous_retrieval(two_retrieved, two_max_overlap, tS, onset):
 
 
 """ Testing """
-import file_handling
+# import file_handling
 
-key = '47402f476fb3076f46f9604929e997ed'
+# key = '47402f476fb3076f46f9604929e997ed'
 
-two_retrieved = file_handling.load_two_first(0, 0, key)
-tS = np.array(file_handling.load_time(0, key)[0])
+# two_retrieved = file_handling.load_two_first(0, 0, key)
+# tS = np.array(file_handling.load_time(0, key)[0])
 
-max_m_mu = file_handling.load_max_m_mu(0, key)[0]
-max2_m_mu = file_handling.load_max2_m_mu(0, key)[0]
-two_max_overlap = np.zeros((len(max_m_mu), 2))
-two_max_overlap[:, 0] = max_m_mu
-two_max_overlap[:, 1] = max2_m_mu
+# max_m_mu = file_handling.load_max_m_mu(0, key)[0]
+# max2_m_mu = file_handling.load_max2_m_mu(0, key)[0]
+# two_max_overlap = np.zeros((len(max_m_mu), 2))
+# two_max_overlap[:, 0] = max_m_mu
+# two_max_overlap[:, 1] = max2_m_mu
 
-recorded = tS > 0.
-tS = tS[recorded]
-two_retrieved = two_retrieved[recorded, :]
-two_max_overlap = two_max_overlap[recorded, :]
+# recorded = tS > 0.
+# tS = tS[recorded]
+# two_retrieved = two_retrieved[recorded, :]
+# two_max_overlap = two_max_overlap[recorded, :]
 
-trans_times = file_handling.load_transition_time(0,  key)
-onset = trans_times[0][1]
+# trans_times = file_handling.load_transition_time(0,  key)
+# onset = trans_times[0][1]
 
-simult_ret, validation_times = detect_simultaneous_retrieval(two_retrieved, two_max_overlap, tS, onset)
+# simult_ret, validation_times = detect_simultaneous_retrieval(two_retrieved, two_max_overlap, tS, onset)
