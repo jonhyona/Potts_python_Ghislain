@@ -80,8 +80,7 @@ analyseDivergence = False
 lamb = []                       # Crossovers
 transition_time = []
 retrieved_saved = []
-max_m_mu_saved = []             # Maximal overlap
-max2_m_mu_saved = []            # Second max overlap
+
 simult_ret = []
 # Outsider is the pattern with second highest overlap
 outsider_saved = []
@@ -104,6 +103,8 @@ theta_i_k_plot = np.zeros((nSnap, N*S))
 sig_i_k_plot = np.zeros((nSnap, N*(S+1)))
 two_first_plot = np.zeros((nSnap, 2), dtype=int)
 t_plot = np.zeros(nSnap)
+max_m_mu_plot = t_plot.copy()
+max2_m_mu_plot = t_plot.copy()
 
 previously_retrieved = -1
 waiting_validation = False
@@ -151,10 +152,12 @@ for iT in tqdm(range(nT)):
         # m_mu_plot[i_snap, 0] = max_m_mu
         # m_mu_plot[i_snap, 1] = max2_m_mu
         m_mu_plot[i_snap, :] = m_mu
-        sig_i_k_plot[i_snap, :] = sig_i_k
+        # sig_i_k_plot[i_snap, :] = sig_i_k
         theta_i_k_plot[i_snap, :] = theta_i_k
         two_first_plot[i_snap, 0] = retrieved_pattern
         two_first_plot[i_snap, 1] = outsider
+        max_m_mu_plot[i_snap] = max_m_mu
+        max2_m_mu_plot[i_snap] = max2_m_mu
         t_plot[i_snap] = tS[iT]
         i_snap += 1
 
@@ -178,8 +181,7 @@ for iT in tqdm(range(nT)):
         transition_time.append(trans_t)
         lamb.append(crossover)
         retrieved_saved.append(retrieved_pattern)
-        max_m_mu_saved.append(max_m_mu)
-        max2_m_mu_saved.append(max2_m_mu)
+
 
         transition_counter += 1
         cpt_idle = 0
@@ -222,11 +224,11 @@ d12 = eta*d12
 file_handling.save_transition_time(cue, kick_seed, transition_time, key)
 file_handling.save_crossover(cue, kick_seed, lamb, key)
 file_handling.save_retrieved(cue, kick_seed, retrieved_saved, key)
-file_handling.save_max_m_mu(cue, kick_seed, max_m_mu_saved, key)
-file_handling.save_max2_m_mu(cue, kick_seed, max2_m_mu_saved, key)
+file_handling.save_max_m_mu(cue, kick_seed, max_m_mu_plot, key)
+file_handling.save_max2_m_mu(cue, kick_seed, max2_m_mu_plot, key)
 file_handling.save_simult_ret(cue, kick_seed, simult_ret, key)
 
-file_handling.save_evolution(cue, kick_seed, m_mu_plot, key)
+# file_handling.save_evolution(cue, kick_seed, m_mu_plot, key)
 file_handling.save_time(cue, kick_seed, t_plot, key)
 file_handling.save_two_first(cue, kick_seed, two_first_plot, key)
 file_handling.save_metrics(cue, kick_seed, d12, duration, key)
