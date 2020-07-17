@@ -1,0 +1,10 @@
+digraph  {
+28;
+100;
+60;
+144;
+28 -> 100  [color="#5101a3", key=0, penwidth=3];
+100 -> 60  [color="#5101a3", key=0, label="0.15", penwidth=3];
+100 -> 60  [color="#f58b47", key=1, label="0.03", penwidth=3];
+144 -> 100  [color="#f58b47", key=0, penwidth=3];
+}

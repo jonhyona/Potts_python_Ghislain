@@ -1,0 +1,28 @@
+digraph  {
+42;
+17;
+8;
+178;
+147;
+117;
+158;
+172;
+179;
+196;
+42 -> 17  [color="#6e00a8", key=0, penwidth=3];
+17 -> 8  [color="#6e00a8", key=0, label="0.02", penwidth=3];
+17 -> 8  [color="#fdca26", key=1, label="0.10", penwidth=3];
+17 -> 147  [color="#6e00a8", key=0, label="0.03", penwidth=3];
+17 -> 147  [color="#de5f65", key=1, label="0.02", penwidth=3];
+17 -> 158  [color="#de5f65", key=0, label="0.02", penwidth=3];
+17 -> 158  [color="#fdca26", key=1, label="0.08", penwidth=3];
+17 -> 172  [color="#6e00a8", key=0, label="0.10", penwidth=3];
+17 -> 172  [color="#de5f65", key=1, label="0.11", penwidth=3];
+17 -> 172  [color="#fdca26", key=2, label="0.02", penwidth=3];
+17 -> 179  [color="#6e00a8", key=0, label="0.22", penwidth=3];
+17 -> 179  [color="#fdca26", key=1, label="0.03", penwidth=3];
+17 -> 196  [color="#6e00a8", key=0, label="0.04", penwidth=3];
+17 -> 196  [color="#de5f65", key=1, label="0.03", penwidth=3];
+178 -> 17  [color="#fdca26", key=0, penwidth=3];
+117 -> 17  [color="#de5f65", key=0, penwidth=3];
+}

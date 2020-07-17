@@ -1,0 +1,17 @@
+digraph  {
+"Bac\ Pro";
+"Bac\ Techno";
+"Bac\ Général";
+"Bac\ Général" -> Licence;
+"Bac\ Techno" -> Licence;
+"Bac\ Pro" -> "BTS\-DUT";
+"Bac\ Général" -> "BTS\-DUT";
+"Bac\ Techno" -> "BTS\-DUT";
+"Bac\ Pro" -> "Formation\ Professionnelle";
+Licence -> Master;
+Master -> Doctorat;
+Doctorat -> Chercheur;
+Doctorat -> "Professeur\ à \l'université";
+"Bac\ Pro" -> Garagiste;
+"Bac\ Pro" -> "Auxiliaire\ de\ vie";
+}

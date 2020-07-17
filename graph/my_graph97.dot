@@ -1,0 +1,10 @@
+digraph  {
+27;
+97;
+74;
+53;
+27 -> 97  [color="#5002a2", key=0, penwidth=3];
+97 -> 74  [color="#5002a2", key=0, label="0.05", penwidth=3];
+97 -> 74  [color="#8304a7", key=1, label="0.04", penwidth=3];
+53 -> 97  [color="#8304a7", key=0, penwidth=3];
+}

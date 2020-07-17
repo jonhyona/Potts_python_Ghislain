@@ -1,0 +1,13 @@
+digraph  {
+138;
+124;
+8;
+184;
+38;
+138 -> 124  [color="#f1804e", key=0, penwidth=3];
+124 -> 8  [color="#f1804e", key=0, label="0.02", penwidth=3];
+124 -> 8  [color="#fbd724", key=1, label="0.02", penwidth=3];
+124 -> 38  [color="#f1804e", key=0, label="0.02", penwidth=3];
+124 -> 38  [color="#fbd724", key=1, label="0.02", penwidth=3];
+184 -> 124  [color="#fbd724", key=0, penwidth=3];
+}
