@@ -1,10 +1,26 @@
 digraph  {
-50;
+103;
 70;
-93;
+77;
 128;
-50 -> 70  [color="#7e03a8", key=0, penwidth=3];
-70 -> 93  [color="#7e03a8", key=0, label="0.02", penwidth=3];
-70 -> 93  [color="#e87059", key=1, label="0.02", penwidth=3];
-128 -> 70  [color="#e87059", key=0, penwidth=3];
+117;
+50;
+123;
+126;
+103 -> 70  [color="#cf4b75", key=0, penwidth=2];
+70 -> 77  [color=black, key=0, label="0.08", penwidth=2];
+70 -> 77  [color="#cf4b75", key=1, label="0.19", penwidth=2];
+70 -> 77  [color="#e87059", key=2, label="0.03", penwidth=2];
+70 -> 117  [color=black, key=0, label="0.04", penwidth=2];
+70 -> 117  [color="#cf4b75", key=1, label="0.02", penwidth=2];
+70 -> 117  [color="#e87059", key=2, label="0.09", penwidth=2];
+70 -> 123  [color=black, key=0, label="0.04", penwidth=2];
+70 -> 123  [color="#7e03a8", key=1, label="0.07", penwidth=2];
+70 -> 123  [color="#cf4b75", key=2, label="0.02", penwidth=2];
+70 -> 123  [color="#e87059", key=3, label="0.08", penwidth=2];
+70 -> 126  [color=black, key=0, label="0.05", penwidth=2];
+70 -> 126  [color="#7e03a8", key=1, label="0.02", penwidth=2];
+70 -> 126  [color="#e87059", key=2, label="0.17", penwidth=2];
+128 -> 70  [color="#e87059", key=0, penwidth=2];
+50 -> 70  [color="#7e03a8", key=0, penwidth=2];
 }

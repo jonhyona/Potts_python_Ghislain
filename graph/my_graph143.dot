@@ -1,16 +1,15 @@
 digraph  {
 75;
 143;
-47;
+55;
 137;
-58;
-109;
-75 -> 143  [color="#aa2395", key=0, penwidth=3];
-143 -> 47  [color="#aa2395", key=0, label="0.05", penwidth=3];
-143 -> 47  [color="#f07f4f", key=1, label="0.05", penwidth=3];
-143 -> 58  [color="#aa2395", key=0, label="0.02", penwidth=3];
-143 -> 58  [color="#f07f4f", key=1, label="0.03", penwidth=3];
-143 -> 109  [color="#aa2395", key=0, label="0.03", penwidth=3];
-143 -> 109  [color="#f07f4f", key=1, label="0.05", penwidth=3];
-137 -> 143  [color="#f07f4f", key=0, penwidth=3];
+110;
+75 -> 143  [color="#aa2395", key=0, penwidth=2];
+143 -> 55  [color=black, key=0, label="0.03", penwidth=2];
+143 -> 55  [color="#aa2395", key=1, label="0.05", penwidth=2];
+143 -> 55  [color="#f07f4f", key=2, label="0.08", penwidth=2];
+143 -> 110  [color=black, key=0, label="0.01", penwidth=2];
+143 -> 110  [color="#aa2395", key=1, label="0.05", penwidth=2];
+143 -> 110  [color="#f07f4f", key=2, label="0.03", penwidth=2];
+137 -> 143  [color="#f07f4f", key=0, penwidth=2];
 }

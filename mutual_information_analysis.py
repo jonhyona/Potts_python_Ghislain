@@ -65,6 +65,15 @@ simulations = ['a2cc92e57feefe09afa4b7d522648850',
                '030d877df8f64e2fd916cab9b744a61c',
                '4c9dc98928d92727c2076eff9c5bb987',
                '119c9880d858cf55ff26a672dd3425e9']
+
+simulations = ['f2f842f51d5180f4eb55beb8efb61882',
+               '625546bb732bd7bf3404e8a2c9193613',
+               'fe71122c46ad4af9f201b9123f36ca42',
+               '7cfd59eb4e3d3a26ec66e4249b22cfba',
+               '001319a7dbc27bb929f6c6d00bc4f08d',
+               '8b27f66e75c7f4f4427bbe59515c6e97',
+               '7218cda81b1e89d0dfc660c0a18ff912',
+               '03771e780bda036f8f2b8160bf2d85d4']
 n_seeds = [1 for ii in range(len(simulations))]
 
 color_s = ['blue', 'orange', 'green', 'red', 'peru', 'red', 'red', 'red', 'red', 'red']

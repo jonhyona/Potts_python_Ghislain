@@ -3,8 +3,9 @@ digraph  {
 164;
 45;
 79;
-28 -> 164  [color="#5101a3", key=0, penwidth=3];
-164 -> 45  [color="#5101a3", key=0, label="0.03", penwidth=3];
-164 -> 45  [color="#b02991", key=1, label="0.14", penwidth=3];
-79 -> 164  [color="#b02991", key=0, penwidth=3];
+28 -> 164  [color="#5101a3", key=0, penwidth=2];
+164 -> 45  [color=black, key=0, label="0.10", penwidth=2];
+164 -> 45  [color="#5101a3", key=1, label="0.03", penwidth=2];
+164 -> 45  [color="#b02991", key=2, label="0.22", penwidth=2];
+79 -> 164  [color="#b02991", key=0, penwidth=2];
 }

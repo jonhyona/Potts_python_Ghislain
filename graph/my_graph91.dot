@@ -3,11 +3,21 @@ digraph  {
 91;
 53;
 138;
+102;
+152;
 198;
-8 -> 91  [color="#260592", key=0, penwidth=3];
-91 -> 53  [color="#260592", key=0, label="0.08", penwidth=3];
-91 -> 53  [color="#f1804e", key=1, label="0.08", penwidth=3];
-91 -> 198  [color="#260592", key=0, label="0.05", penwidth=3];
-91 -> 198  [color="#f1804e", key=1, label="0.04", penwidth=3];
-138 -> 91  [color="#f1804e", key=0, penwidth=3];
+8 -> 91  [color="#260592", key=0, penwidth=2];
+91 -> 53  [color=black, key=0, label="0.04", penwidth=2];
+91 -> 53  [color="#260592", key=1, label="0.06", penwidth=2];
+91 -> 53  [color="#f1804e", key=2, label="0.08", penwidth=2];
+91 -> 102  [color=black, key=0, label="0.06", penwidth=2];
+91 -> 102  [color="#260592", key=1, label="0.04", penwidth=2];
+91 -> 102  [color="#f1804e", key=2, label="0.02", penwidth=2];
+91 -> 152  [color=black, key=0, label="0.09", penwidth=2];
+91 -> 152  [color="#260592", key=1, label="0.05", penwidth=2];
+91 -> 152  [color="#f1804e", key=2, label="0.16", penwidth=2];
+91 -> 198  [color=black, key=0, label="0.10", penwidth=2];
+91 -> 198  [color="#260592", key=1, label="0.04", penwidth=2];
+91 -> 198  [color="#f1804e", key=2, label="0.02", penwidth=2];
+138 -> 91  [color="#f1804e", key=0, penwidth=2];
 }

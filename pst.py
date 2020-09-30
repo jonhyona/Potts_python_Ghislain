@@ -10,10 +10,11 @@ import os
 plt.ion()
 plt.close('all')
 
-simulations = ['f30d8a2438252005f6a9190c239c01c1']
+# simulations = ['f30d8a2438252005f6a9190c239c01c1']
+simulations = ['9e0fbd728bd38ee6eb130d85f35faa9a']
 
 key = simulations[0]
-n_seeds = 10
+n_seeds = 1
 L = 3
 retrieved = file_handling.load_retrieved_several(n_seeds, key)
 num_tables, proba_tables = proba_tools.build_trans_tables(retrieved, key, L)
@@ -81,6 +82,8 @@ def construct_graph(saddles):
     prev_Y = saddles[0][1]
     for ind_saddle in range(len(saddles)):
         XYZ = saddles[ind_saddle]
+        if (XYZ == np.array([161, 29, 91])).all():
+            print(XYZ)
         X = XYZ[0]
         Y = XYZ[1]
         XY = XYZ[:-1]
@@ -91,18 +94,25 @@ def construct_graph(saddles):
             os.system('dot -Tjpg -o graph/my_graph%d.jpg graph/my_graph%d.dot' % (prev_Y, prev_Y))
             G = nx.MultiDiGraph()
             prev_Y = Y
-        print(XYZ)
+        # print(XYZ)
         G.add_nodes_from(XYZ)
         rgba_color = (256*np.array(color_fun(X/p))).astype(int)
-
-        G.add_edge(Y, Z, color='#%02x%02x%02x' %
-                   tuple(rgba_color[:-1]), label='%.2f' %
-                   proba_tools.condi_prob(Z, XY, XYZ, proba_tables), penwidth=width)
-        print(proba_tools.condi_prob(Z, XY, XYZ, proba_tables))
 
         if not G.has_edge(X, Y):
             G.add_edge(X, Y, color='#%02x%02x%02x' %
                        tuple(rgba_color[: -1]), penwidth=width)
+
+        if not G.has_edge(Y, Z):
+            G.add_edge(Y, Z, color='black', label='%.2f' %
+                       proba_tools.condi_prob(Z, [Y], YZ,
+                                              proba_tables), penwidth=width)
+        G.add_edge(Y, Z, color='#%02x%02x%02x' %
+                   tuple(rgba_color[:-1]), label='%.2f' %
+                   proba_tools.condi_prob(Z, XY, XYZ, proba_tables),
+                   penwidth=width)
+        # print(proba_tools.condi_prob(Z, XY, XYZ, proba_tables))
+
+
             # G[Y][Z][-1]['color'] = '#%02x%02x%02x' % tuple(rgba_color[:-1])
 
         # G[X][Y]['color'] = 'black'
@@ -117,3 +127,18 @@ def construct_graph(saddles):
 
 saddles = find_saddle(relevant_seq)
 construct_graph(saddles)
+
+
+def issublist(small_list, big_list):
+    for ii in range(len(big_list)-len(small_list)):
+        if big_list[ii: ii+len(small_list)] == small_list:
+            return True
+    return False
+
+
+print("Sublist check")
+for cue in range(p):
+    for saddle in saddles:
+        if issublist(saddle.tolist(), retrieved[0][cue][:10]):
+            if saddle[1] == 124:
+                print(cue, saddle)

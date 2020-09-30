@@ -7,8 +7,8 @@ import copy
 
 plt.ion()
 plt.close('all')
-n_seeds = 6
-simulations = ['f30d8a2438252005f6a9190c239c01c1']
+n_seeds = 1
+simulations = ['f35c969f14b35efe505be6e417c03656']
 
 (dt, tSim, N, S, p, num_fact, p_fact,
  dzeta, a_pf,
@@ -157,14 +157,16 @@ plt.close(r'p_ABA hist_g_A%.1f_a_pf%.2f' % (g_A, a_pf))
 plt.figure(r'p_ABA hist_g_A%.1f_a_pf%.2f' % (g_A, a_pf))
 plt.hist(np.reshape(p_ABA, p**2), alpha=alpha, bins=bins, label='Latching')
 plt.hist(np.reshape(p_ABA_markov, p**2), alpha=alpha, bins=bins, label='Markov')
-plt.hist(np.reshape(p_ABA_rand, p**2), alpha=alpha, bins=bins, label='Random')
-plt.hist(np.reshape(p_ABA_shuf, p**2), alpha=alpha, bins=bins, label='Shuffled')
+# plt.hist(np.reshape(p_ABA_rand, p**2), alpha=alpha, bins=bins, label='Random')
+# plt.hist(np.reshape(p_ABA_shuf, p**2), alpha=alpha, bins=bins, label='Shuffled')
 plt.legend()
 plt.yscale('log')
 # plt.xscale('log')
 plt.xlabel('Probability of ABA transition')
 plt.ylabel('Number of pair AB (with order)')
+plt.ticklabel_format(axis="both", style="sci", scilimits=(0,0))
 plt.title(r'$g_A$=%.1f, $a_{pf}$=%.2f' % (g_A, a_pf))
+plt.tight_layout()
 
 p_AB_rand = num_AB_rand/np.sum(num_B)
 p_AB_shuf = num_AB_shuf/np.sum(num_B)

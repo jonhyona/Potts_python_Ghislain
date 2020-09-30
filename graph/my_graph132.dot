@@ -1,10 +1,11 @@
 digraph  {
 124;
 132;
-121;
+17;
 198;
-124 -> 132  [color="#e56a5d", key=0, penwidth=3];
-132 -> 121  [color="#e56a5d", key=0, label="0.18", penwidth=3];
-132 -> 121  [color="#f1f625", key=1, label="0.03", penwidth=3];
-198 -> 132  [color="#f1f625", key=0, penwidth=3];
+124 -> 132  [color="#e56a5d", key=0, penwidth=2];
+132 -> 17  [color=black, key=0, label="0.07", penwidth=2];
+132 -> 17  [color="#e56a5d", key=1, label="0.04", penwidth=2];
+132 -> 17  [color="#f1f625", key=2, label="0.12", penwidth=2];
+198 -> 132  [color="#f1f625", key=0, penwidth=2];
 }

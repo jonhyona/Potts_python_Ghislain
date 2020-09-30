@@ -73,9 +73,42 @@ def save_activation(cue, kick_seed, sig_i_k, key):
               sig_i_k)
 
 
+def save_thresholds(cue, kick_seed, theta_i_k, key):
+    save_text(key+'/thresholds_cue_%d_kickseed_%d.txt' % (cue,
+                                                          kick_seed),
+              theta_i_k)
+
+
+def save_thresholds_A(cue, kick_seed, r_i_S_A, key):
+    save_text(key+'/thresholds_A_cue_%d_kickseed_%d.txt' % (cue,
+                                                            kick_seed),
+              r_i_S_A)
+
+
+def save_thresholds_B(cue, kick_seed, r_i_S_B, key):
+    save_text(key+'/thresholds_B_cue_%d_kickseed_%d.txt' % (cue,
+                                                            kick_seed),
+              r_i_S_B)
+
+
 def load_activation_cue(cue, kick_seed, key):
     return load_text(key+'/activation_cue_%d_kickseed_%d.txt' % (cue,
                                                                  kick_seed))
+
+
+def load_thresholds_cue(cue, kick_seed, key):
+    return load_text(key+'/thresholds_cue_%d_kickseed_%d.txt' % (cue,
+                                                                 kick_seed))
+
+
+def load_thresholds_S_A_cue(cue, kick_seed, key):
+    return load_text(key+'/thresholds_A_cue_%d_kickseed_%d.txt' %
+                     (cue, kick_seed))
+
+
+def load_thresholds_S_B_cue(cue, kick_seed, key):
+    return load_text(key+'/thresholds_B_cue_%d_kickseed_%d.txt' %
+                     (cue, kick_seed))
 
 
 def load_network(key):

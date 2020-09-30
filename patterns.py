@@ -237,7 +237,7 @@ def readcsv(filename):
 
 def get_from_file(file_name):
     ksi_i_mu = np.zeros((N, p), dtype=int)
-    ksi_i_mu[:, :] = np.transpose(readcsv(file_name))
+    ksi_i_mu[:, :] = np.transpose(readcsv(file_name))[:, :p]
     delta__ksi_i_mu__k = np.kron(ksi_i_mu, np.ones((S, 1)))
     k_mat = np.kron(np.ones((N, p)),
                     np.reshape(np.linspace(0, S-1, S), (S, 1)))

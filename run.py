@@ -98,6 +98,8 @@ r_i_k, r_i_S_A, r_i_S_B, sig_i_k, m_mu, dt_r_i_k_act, dt_r_i_S_A, \
     = initialisation.network(J_i_j_k_l, delta__ksi_i_mu__k, g_A, w, cue_mask)
 
 r_i_k_plot = np.zeros((nSnap, N*(S+1)))
+r_i_S_A_plot = np.zeros((nSnap, N))
+r_i_S_B_plot = np.zeros((nSnap, N))
 m_mu_plot = np.zeros((nSnap, p))
 theta_i_k_plot = np.zeros((nSnap, N*S))
 sig_i_k_plot = np.zeros((nSnap, N*(S+1)))
@@ -149,10 +151,12 @@ for iT in tqdm(range(nT)):
 
     if tS[iT] >= tSnap[i_snap]:
         r_i_k_plot[i_snap, :] = r_i_k
+        r_i_S_A_plot[i_snap, :] = r_i_S_A
+        r_i_S_B_plot[i_snap, :] = r_i_S_B
         # m_mu_plot[i_snap, 0] = max_m_mu
         # m_mu_plot[i_snap, 1] = max2_m_mu
         m_mu_plot[i_snap, :] = m_mu
-        # sig_i_k_plot[i_snap, :] = sig_i_k
+        sig_i_k_plot[i_snap, :] = sig_i_k
         theta_i_k_plot[i_snap, :] = theta_i_k
         two_first_plot[i_snap, 0] = retrieved_pattern
         two_first_plot[i_snap, 1] = outsider
@@ -228,13 +232,16 @@ file_handling.save_max_m_mu(cue, kick_seed, max_m_mu_plot, key)
 file_handling.save_max2_m_mu(cue, kick_seed, max2_m_mu_plot, key)
 file_handling.save_simult_ret(cue, kick_seed, simult_ret, key)
 
-# file_handling.save_evolution(cue, kick_seed, m_mu_plot, key)
 file_handling.save_time(cue, kick_seed, t_plot, key)
 file_handling.save_two_first(cue, kick_seed, two_first_plot, key)
 file_handling.save_metrics(cue, kick_seed, d12, duration, key)
 
-# if cue == 0:
-#     file_handling.save_activation(cue, kick_seed, sig_i_k_plot, key)
+if cue == 0 and kick_seed == 0:
+    file_handling.save_evolution(cue, kick_seed, m_mu_plot, key)
+    file_handling.save_activation(cue, kick_seed, sig_i_k_plot, key)
+    file_handling.save_thresholds(cue, kick_seed, theta_i_k_plot, key)
+    file_handling.save_thresholds_B(cue, kick_seed, r_i_S_A_plot, key)
+    file_handling.save_thresholds_A(cue, kick_seed, r_i_S_B_plot, key)
 
 # file_handling.save_coact_pos(cue, kick_seed, coact_pos, key)
 # file_handling.save_coact_neg(cue, kick_seed, coact_neg, key)

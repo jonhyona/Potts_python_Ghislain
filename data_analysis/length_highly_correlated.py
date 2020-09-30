@@ -19,6 +19,7 @@ import correlations
 import seaborn as sns
 from tqdm import tqdm
 import file_handling
+from numpy import median
 
 
 # Required for ssh execution with plots
@@ -40,6 +41,11 @@ simulations_above = ['12257f9b2af7fdeaa5ebeec24b71b13c',
                      '2999e6e4eede18f9212d8abdd146e7f4',
                      '779e267d7fd11b394a96bc18ac9d2261']  # Just above the border
 
+simulations_above = ['f2f842f51d5180f4eb55beb8efb61882',
+                     '001319a7dbc27bb929f6c6d00bc4f08d',
+                     'f35c969f14b35efe505be6e417c03656']
+
+
 # ryom_data = ['seq_w1.4_gA0.0', 'seq_w1.4_gA0.5', 'seq_w1.4_gA1.0']
 color_s = ['blue', 'orange', 'green']
 color_s_ryom = ['navy', 'peru', 'darkolivegreen']
@@ -52,21 +58,27 @@ def plot_length_highly_correlated(simulation_list):
 
         (dt, tSim, N, S, p, num_fact, p_fact, dzeta, a_pf, eps, f_russo,
          cm, a, U, w, tau_1, tau_2, tau_3_A, tau_3_B, g_A, beta, tau, t_0,
-         g, random_seed, p_0, n_p, nSnap, russo2008_mode) = \
+         g, random_seed, p_0, n_p, nSnap, russo2008_mode, _) = \
             file_handling.load_parameters(simulation_key)
 
-        lamb = file_handling.load_overlap(simulation_key)
+        lamb = file_handling.load_crossover(0, simulation_key)
+        lamb_med = []
+        for ind_cue in range(p):
+            lamb_med += lamb[ind_cue][1:]
+        lamb_med = np.array(lamb_med)
+        lamb_med = median(lamb_med)
         cue_number = len(lamb)
 
         n_min = 1
-        n_max = 80
+        n_max = 400
         # n_max = 10*file_handling.event_counter(lamb, p)/p
         duration_bins = np.linspace(n_min, n_max, 100)
         # duration_bins = np.logspace(np.log10(n_min), np.log10(n_max), 10)
         # duration_x = np.logspace(np.log10(n_min), np.log10(n_max), 200)
 
         lambda_threshold_s = [0.2, 0.25, 0.3, 0.35]
-        lambda_threshold_s = [0.3]
+        lambda_threshold_s = [0]
+        print(lamb_med)
         n_th = len(lambda_threshold_s)
 
         for ind_th in range(n_th):
@@ -95,13 +107,15 @@ def plot_length_highly_correlated(simulation_list):
             # plt.hist(high_sequence_durations, alpha=0.3,
             #          density=False, color=color_s[ind_key])
             # sns.kdeplot(high_sequence_durations, cumulative=True, color=color_s[ind_key], label='g_A %.1f, w %.1f' % (g_A, w))
-            sns.kdeplot(high_sequence_durations, color=color_s[ind_key], label='g_A %.1f' % g_A)
+            sns.distplot(high_sequence_durations, color=color_s[ind_key], label='g_A %.1f' % g_A, kde_kws={'bw':1})
             plt.xlim(n_min, n_max)
             # plt.xscale('log')
     for ind_th in range(n_th):
         # plt.subplot(n_th//2+n_th % 2, 2, ind_th+1)
-        plt.xlabel('Length of highly correlated sequence')
+        plt.xlabel('Length')
         plt.ylabel('Density')
+        # plt.xscale('log')
+        plt.yscale('log')
         # plt.title(
         #     r'$\lambda_{th}$='+str(lambda_threshold_s[ind_th])+',$w$='+str(w))
     # plt.subplot(n_th//2+n_th % 2, 1, 1)

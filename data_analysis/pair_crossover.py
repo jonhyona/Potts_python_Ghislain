@@ -8,9 +8,21 @@ import correlations
 plt.ion()
 plt.close('all')
 
+SMALL_SIZE = 8
+MEDIUM_SIZE = 10
+BIGGER_SIZE = 16
+HUGE_SIZE = 15
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=BIGGER_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=BIGGER_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=BIGGER_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=BIGGER_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=BIGGER_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=HUGE_SIZE)  # fontsize of the figure title
+
 # simulations = ['a2cc92e57feefe09afa4b7d522648850']
 # simulations = ['f30d8a2438252005f6a9190c239c01c1']
-simulations = ['9e0fbd728bd38ee6eb130d85f35faa9a']
+simulations = ['f35c969f14b35efe505be6e417c03656', '9e0fbd728bd38ee6eb130d85f35faa9a']
 # simulations = ['b18e30bc89dbcb5bc2148fb9c6e0c51d']
 # simulations = ['ff9fe40ed43a94577c1cc2fea6453bf0']
 
@@ -61,40 +73,40 @@ for seed in range(n_seeds):
             previous.append(pattA)
             following.append(pattB)
 
-# plt.figure('Crossover histo')
-# plt.hist(crossovers, bins=100)
+plt.figure('Crossover histo')
+plt.hist(crossovers, bins=100)
 
-# prop_high = np.zeros(p**2)
-# prop_low = np.zeros(p**2)
-# means = np.zeros(p**2)
-# stds = np.zeros(p**2)
-# length = np.zeros(p**2)
-# # thres = np.median(crossovers)
-# thres = 0.5
-# max_len = 0
+prop_high = np.zeros(p**2)
+prop_low = np.zeros(p**2)
+means = np.zeros(p**2)
+stds = np.zeros(p**2)
+length = np.zeros(p**2)
+# thres = np.median(crossovers)
+thres = 0.5
+max_len = 0
 
-# joy_list = []
-# joy_means = []
-# for pair in range(p**2):
-#     if pair_crossovers[pair] == []:
-#         prop_high[pair] = np.nan
-#         prop_low[pair] = np.nan
-#     else:
-#         lamb = np.array(pair_crossovers[pair])
-#         prop_high[pair] = np.sum(lamb >= thres)/len(lamb)
-#         prop_low[pair] = np.sum(lamb < thres)/len(lamb)
-#         length[pair] = len(lamb)
-#         means[pair] = np.mean(lamb)
-#         stds[pair] = np.std(lamb)
-#         max_len = max(length[pair], max_len)
-#         if length[pair] > 100:
-#             if rd.rand() > 0.5:
-#                 plt.figure('lambda')
-#                 sns.distplot(lamb, kde_kws={'bw':
-#                                             0.4}, hist=False)
-#                 plt.xlim(0, 1)
-#                 plt.ylabel('Proportion of transitions')
-#                 plt.xlabel('Crossover')
+joy_list = []
+joy_means = []
+for pair in range(p**2):
+    if pair_crossovers[pair] == []:
+        prop_high[pair] = np.nan
+        prop_low[pair] = np.nan
+    else:
+        lamb = np.array(pair_crossovers[pair])
+        prop_high[pair] = np.sum(lamb >= thres)/len(lamb)
+        prop_low[pair] = np.sum(lamb < thres)/len(lamb)
+        length[pair] = len(lamb)
+        means[pair] = np.mean(lamb)
+        stds[pair] = np.std(lamb)
+        max_len = max(length[pair], max_len)
+        if length[pair] > 100:
+            if rd.rand() > 0.85:
+                plt.figure('lambda')
+                sns.distplot(lamb, kde_kws={'bw':
+                                            0.4}, hist=False)
+                plt.xlim(0, 1)
+                plt.ylabel('Proportion of transitions')
+                plt.xlabel('Crossover')
 
 # exist = length > 4
 # prop_high = prop_high[exist]

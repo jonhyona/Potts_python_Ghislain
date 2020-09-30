@@ -25,6 +25,7 @@ simulations = ['644eba9257be9f7f7fef6c9a4b872b1e',
 title_str = 'Just below the latching border'
 
 
+
 def plot_lamb_hist_gsln(simulation_list):
     labels = []
     # def plot_lamb_hist(simulation_list):

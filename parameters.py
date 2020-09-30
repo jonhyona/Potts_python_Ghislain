@@ -8,8 +8,8 @@ from and their behavior
 """
 # Integration
 dt = 1.                         # Time-step
-tSim = 1e5                      # Number of runs
-nSnap = min(int(tSim/dt), 10000)    # Resampling to plot time-evolution
+tSim = 4000                      # Number of runs
+nSnap = min(int(tSim/dt), 200)    # Resampling to plot time-evolution
 
 # Network
 
@@ -34,12 +34,13 @@ a = 0.25                        # Pattern sparsity
 
 # Network dynamics
 U = 0.1                         # Threshold
-w = 1.4                         # Attractor deepener
+w = 1.                  # Attractor deepener
 tau_1 = 10                      # Activity time-scale
 tau_2 = 200                     # Threshold time-scale
-tau_3_A = 5                     # Unit threshold fast
+tau_3_A = 5
+# Unit threshold fast
 tau_3_B = 1e5                   # Unit threshold slow
-g_A = 1.                        # Weight between slow-high adapation
+g_A = 0.                        # Weight between slow-high adapation
 beta = 11
 
 # Cue
@@ -56,7 +57,7 @@ n_p = 1                         # Number of cues
 # Introduce variability across simulations kick to some random
 # among the pattern
 muted_prop = 0.8
-kick_seed = 1
+kick_seed = 0
 
 random_seed = 2021
 # The model changed a bit after Russo2008 see h funtion in iteration.py

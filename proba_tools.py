@@ -23,7 +23,8 @@ def trio_prob_table(retrieved, key):
 
     for kick_seed in range(n_seeds):
         for cue_ind in range(p):
-            if len(retrieved[kick_seed][cue_ind]) >= 3:
+            if isinstance(retrieved[kick_seed][cue_ind], list) \
+               and len(retrieved[kick_seed][cue_ind]) >= 3:
                 # print(len(retrieved[kick_seed][cue_ind]))
                 duration = len(retrieved[kick_seed][cue_ind])
                 if cue_ind != retrieved[kick_seed][cue_ind][0]:
@@ -77,7 +78,8 @@ def build_trans_tables(retrieved, key, L):
     print('Fill num_tables')
     for kick_seed in tqdm(range(n_seeds)):
         for cue_ind in range(p):
-            if len(retrieved[kick_seed][cue_ind]) >= 3:
+            if isinstance(retrieved[kick_seed][cue_ind], list) \
+               and len(retrieved[kick_seed][cue_ind]) >= 3:
                 # print(len(retrieved[kick_seed][cue_ind]))
                 sequence = []
                 sequence = retrieved[kick_seed][cue_ind][3:]

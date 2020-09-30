@@ -53,7 +53,10 @@ if not os.path.exists('data_analysis/'+key):
         if exc.errno != errno.EEXIST:
             raise
 
-ksi_i_mu, delta__ksi_i_mu__k = patterns.get_uncorrelated(random_seed)
+ksi_i_mu, delta__ksi_i_mu__k = patterns.get_from_file(
+    'pattern_S%d_a%.2f_apf%.2f_pfact%d_Nfact%d_Numfact%d_zeta%.3f'
+    % (S, a, a_pf, p_fact, N, num_fact, dzeta))
+# ksi_i_mu, delta__ksi_i_mu__k = patterns.get_uncorrelated()
 J_i_j_k_l, C_i_j = initialisation.hebbian_tensor(delta__ksi_i_mu__k,
                                                  random_seed)
 
